@@ -31,7 +31,11 @@
                 "output": "./svg"
               }
             ],
-            "styles": ["src/theme/variables.scss", "src/global.scss"],
+            "styles": [
+              "node_modules/cm-chessboard/styles/cm-chessboard.css",
+              "src/theme/variables.scss", 
+              "src/global.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -166,6 +170,7 @@
     }
   },
   "cli": {
+    "analytics": "2a8ae740-de71-46ee-8e84-5e2073610e1c",
     "defaultCollection": "@ionic/angular-toolkit"
   },
   "schematics": {
