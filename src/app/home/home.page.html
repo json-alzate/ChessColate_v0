@@ -1,14 +1,50 @@
-<ion-header [translucent]="true">
+<ion-header class="ion-no-border">
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+
+    <ion-buttons slot="start">
+      <ion-button color="danger" disabled>
+        <!-- <ion-icon slot="icon-only" name="heart-outline"></ion-icon> -->
+        <!-- <ion-icon slot="icon-only" name="heart"></ion-icon> -->
+        <ion-icon slot="icon-only" name="heart-dislike-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+
+    <ion-title>Nombre partida</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadBoard()">
+        <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
 
-  <div class="board" id="board1"></div>
+
+<ion-content>
+
+  <div class="board" id="board1">
+  </div>
+
+  <app-board-actions-buttons></app-board-actions-buttons>
+
+  <img src="assets/images/separator.png">
+
+
+  <ion-list>
+    <ion-list-header>
+      <ion-label>
+        <!-- Relacionadas <small><i>(Solo favoritos)</i></small> -->
+       </ion-label>
+      <ion-button color="danger">
+        <ion-icon name="heart-circle"></ion-icon>
+      </ion-button>
+    </ion-list-header>
+
+    <app-item-game></app-item-game>
+    <app-item-game></app-item-game>
+
+  </ion-list>
 
 
 </ion-content>
