@@ -1,6 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-
-import { Storage } from '@ionic/storage-angular';
+import { ModalController, PopoverController, AlertController } from '@ionic/angular';
 
 import { Chess } from 'chess.js';
 import {
@@ -14,6 +13,11 @@ import {
 // models
 import { Game } from '../models/game.model';
 
+// components
+import { NewChooseComponent } from './components/new-choose/new-choose.component';
+
+// services
+import { GamesStoreService } from '../services/games-store.service';
 
 @Component({
   selector: 'app-home',
@@ -27,20 +31,22 @@ export class HomePage implements OnInit {
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
-    private storage: Storage
+    private modalController: ModalController,
+    public popoverController: PopoverController,
+    private alertController: AlertController
   ) {
 
   }
 
   ngOnInit(): void {
   }
-  
-  ionViewDidEnter(){
+
+  ionViewDidEnter() {
     this.loadBoard();
   }
 
-  async loadBoard() {    
-    this.board =  await new Chessboard(document.getElementById('board1'), {
+  async loadBoard() {
+    this.board = await new Chessboard(document.getElementById('board1'), {
       position: 'start',
       moveInputMode: MOVE_INPUT_MODE.dragPiece
     });
@@ -62,6 +68,49 @@ export class HomePage implements OnInit {
     this.changeDetectorRef.markForCheck();
   }
 
+
+  async openNewChoose(ev) {
+    const popover = await this.popoverController.create({
+      component: NewChooseComponent,
+      event: ev
+    });
+
+    await popover.present();
+
+    const { data } = await popover.onDidDismiss();
+    if (data && data === 'new') {
+      this.presentAlertPrompt();
+    }
+
+  }
+
+  async presentAlertPrompt() {
+    const alert = await this.alertController.create({
+      message: 'Escribe un nombre para guardarla',
+      backdropDismiss: false,
+      cssClass: 'alert-new-name',
+      inputs: [
+        {
+          name: 'name',
+          type: 'text',
+          placeholder: 'Nombre'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        }, {
+          text: 'Guardar',
+          handler: () => {
+            console.log('Confirm Ok');
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
 
   openSettings() {
 

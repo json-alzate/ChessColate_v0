@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-board-actions-buttons',
@@ -7,8 +7,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BoardActionsButtonsComponent implements OnInit {
 
+  @Output() newGame = new EventEmitter();
+
   constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() { }
+
+  clickNew($event) {
+    this.newGame.emit($event);
+  }
 
 }
