@@ -23,12 +23,17 @@ export class GamesStoreService {
 
   }
 
+  updateGame(game: Game) {
+    console.log('game to update ', game);
+
+  }
+
   updateGames() {
 
   }
 
-  saveGame() {
-
+  saveGame(game: Game) {
+    console.log('game to save ', game);
   }
 
 
