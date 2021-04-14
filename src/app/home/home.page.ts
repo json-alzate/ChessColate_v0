@@ -5,8 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 import Chess from 'chess.js';
 
-
-
 import {
   COLOR,
   INPUT_EVENT_TYPE,
@@ -22,7 +20,7 @@ import { Game, Move } from '../models/game.model';
 import { NewChooseComponent } from './components/new-choose/new-choose.component';
 
 // services
-import { GamesStoreService } from '../services/games-store.service';
+import { GamesStorageService } from '../services/games-storage.service';
 
 @Component({
   selector: 'app-home',
@@ -39,22 +37,30 @@ export class HomePage implements OnInit {
   currentMove: string;
   currentMoveFem: string;
 
+  gamesSearched: Game[] = [];
+
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
     private modalController: ModalController,
     public popoverController: PopoverController,
     private alertController: AlertController,
-    private gamesStoreService: GamesStoreService
+    private gamesStorageService: GamesStorageService
   ) {
+
+    this.gamesStorageService.getObserverGames().subscribe(games =>{
+      console.log('estos son los games sub', games);
+    });
 
   }
 
   ngOnInit(): void {
+    this.gamesSearched = this.gamesStorageService.getGames();
   }
 
   ionViewDidEnter() {
     this.loadBoard();
   }
+
 
   async loadBoard() {
     this.board = await new Chessboard(document.getElementById('board1'), {
@@ -83,8 +89,6 @@ export class HomePage implements OnInit {
               this.presentAlertPrompt(objectMove);
             }
           }
-
-
           // return true, if input is accepted/valid, `false` takes the move back
           return theMove;
         case INPUT_EVENT_TYPE.moveCanceled:
@@ -109,6 +113,7 @@ export class HomePage implements OnInit {
     }
 
   }
+
 
   async presentAlertPrompt(move?: Move) {
     const alert = await this.alertController.create({
@@ -138,6 +143,7 @@ export class HomePage implements OnInit {
     await alert.present();
   }
 
+
   newGame(name: string, move?: Move) {
     const currentPosition = this.board.getPosition();
     let moves = [];
@@ -153,17 +159,13 @@ export class HomePage implements OnInit {
       isShowing: true,
       inFavorites: false
     };
-    this.gamesStoreService.saveGame(newObject);
+    this.gamesStorageService.saveGame(newObject);
     this.currentGame = newObject;
     this.currentMoveFem = currentPosition;
     this.changeDetectorRef.markForCheck();
   }
 
 
-  openSettings() {
-
-  }
-
-
+  openSettings() { }
 
 }

@@ -24,7 +24,7 @@
   <div class="board" id="board1">
   </div>
 
-  <app-board-actions-buttons (newGame)="openNewChoose($event)" ></app-board-actions-buttons>
+  <app-board-actions-buttons (newGame)="openNewChoose($event)"></app-board-actions-buttons>
 
   <img src="assets/images/separator.png">
 
@@ -39,8 +39,7 @@
       </ion-button>
     </ion-list-header> -->
 
-    <app-item-game></app-item-game>
-    <app-item-game></app-item-game>
+    <app-item-game *ngFor="let game of gamesSearched" [game]="game"></app-item-game>
 
   </ion-list>
 
