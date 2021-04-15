@@ -26,22 +26,16 @@ export class GamesStorageService {
 
   async loadGames() {
 
-
     this.observerGames = new Observable(observer => {
       Storage.get({
         key: 'ChessColate_games'
       }).then(data => {
-        console.log('data ', data.value);
         this.games = JSON.parse(data.value);
         observer.next(this.games);
       });
     });
 
-    this.observerGames.subscribe(games => {
-      console.log('service games ', games);
-
-    });
-
+    this.observerGames.subscribe();
 
   }
 

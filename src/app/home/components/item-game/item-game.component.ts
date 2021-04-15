@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 import { Game } from '../../../models/game.model';
 
@@ -10,12 +10,15 @@ import { Game } from '../../../models/game.model';
 export class ItemGameComponent implements OnInit {
 
   @Input() game: Game;
+  @Output() clicked = new EventEmitter<Game>();
 
   constructor() { }
 
   ngOnInit() {
-    console.log('el juego ', this.game);
-    
+  }
+
+  onClickItem() {
+    this.clicked.emit(this.game);
   }
 
 }

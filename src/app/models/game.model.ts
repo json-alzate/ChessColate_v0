@@ -6,7 +6,7 @@ export interface Move {
 export interface Game {
     id: string;
     name: string;
-    movesFEM: string[];
+    movesFEN: string[];
     moves: Move[];
     pgn?: string;
     isShowing?: boolean;

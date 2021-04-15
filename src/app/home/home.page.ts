@@ -34,8 +34,12 @@ export class HomePage implements OnInit {
   chessInstance = new Chess();
 
   currentGame: Game;
-  currentMove: string;
-  currentMoveFem: string;
+
+
+  isFirstMove = true;
+  isLastMove = true;
+
+  countGames: number;
 
   gamesSearched: Game[] = [];
 
@@ -47,14 +51,11 @@ export class HomePage implements OnInit {
     private gamesStorageService: GamesStorageService
   ) {
 
-    this.gamesStorageService.getObserverGames().subscribe(games =>{
-      console.log('estos son los games sub', games);
-    });
-
   }
 
   ngOnInit(): void {
     this.gamesSearched = this.gamesStorageService.getGames();
+    this.countGames = this.gamesSearched ? this.gamesSearched.length : 0;
   }
 
   ionViewDidEnter() {
@@ -69,11 +70,9 @@ export class HomePage implements OnInit {
     });
     this.board.enableMoveInput((event) => {
       // handle user input here
-      console.log('event ', event);
-
       switch (event.type) {
         case INPUT_EVENT_TYPE.moveStart:
-          console.log(`moveStart: ${event.square}`);
+          // console.log(`moveStart: ${event.square}`);
           // return `true`, if input is accepted/valid, `false` aborts the interaction, the piece will not move
           return true;
         case INPUT_EVENT_TYPE.moveDone:
@@ -83,16 +82,22 @@ export class HomePage implements OnInit {
           if (theMove) {
             this.board.setPosition(this.chessInstance.fen());
             if (this.currentGame) {
+              // TODO validar tercera forma de nuevo (cuando el movimiento no es el ultimo y es diferente al que sigue)
+              // se guarda el movimiento en la partida
               this.currentGame.pgn = this.chessInstance.pgn(); // 1.e4 e5 2.Cc3
               this.currentGame.moves = [...this.currentGame.moves, objectMove];
+              this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.board.getPosition()];              
+              this.gamesStorageService.updateGame(this.currentGame);
+
             } else {
               this.presentAlertPrompt(objectMove);
             }
+
           }
           // return true, if input is accepted/valid, `false` takes the move back
           return theMove;
         case INPUT_EVENT_TYPE.moveCanceled:
-          console.log(`moveCanceled`);
+          console.log('moveCanceled ', this.chessInstance.pgn());
       }
     });
     this.changeDetectorRef.markForCheck();
@@ -153,7 +158,7 @@ export class HomePage implements OnInit {
     const newObject: Game = {
       id: uuidv4(),
       name,
-      movesFEM: [currentPosition],
+      movesFEN: [currentPosition],
       pgn: this.chessInstance.pgn(),
       moves,
       isShowing: true,
@@ -161,8 +166,19 @@ export class HomePage implements OnInit {
     };
     this.gamesStorageService.saveGame(newObject);
     this.currentGame = newObject;
-    this.currentMoveFem = currentPosition;
     this.changeDetectorRef.markForCheck();
+  }
+
+
+  onClickOnGame(game: Game) {
+
+    this.board.setPosition(game.movesFEN[0], true);
+    this.chessInstance.clear();
+    this.chessInstance.load_pgn(game.pgn);
+    this.currentGame = game;
+
+    console.log(this.chessInstance.pgn());
+  
   }
 
 
