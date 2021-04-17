@@ -1,18 +1,16 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
 
-    <ion-buttons slot="start">
+    <ion-title>
+      {{ currentGame?.name }}
+    </ion-title>
+    <ion-buttons slot="end">
       <ion-button color="danger" disabled>
         <!-- <ion-icon slot="icon-only" name="heart-outline"></ion-icon> -->
         <!-- <ion-icon slot="icon-only" name="heart"></ion-icon> -->
         <ion-icon slot="icon-only" name="heart-dislike-outline"></ion-icon>
       </ion-button>
-    </ion-buttons>
-
-
-    <ion-title>Nombre partida</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="loadBoard()">
+      <ion-button (click)="openSettings()">
         <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -26,23 +24,27 @@
   <div class="board" id="board1">
   </div>
 
-  <app-board-actions-buttons></app-board-actions-buttons>
+  <app-board-actions-buttons [isFirstMove]="isFirstMove" [isLastMove]="isLastMove" (newGame)="openNewChoose($event)">
+  </app-board-actions-buttons>
 
   <img src="assets/images/separator.png">
 
 
-  <ion-list>
-    <ion-list-header>
+  <ion-list class="ion-margin-top">
+    <!-- <ion-list-header>
       <ion-label>
-        <!-- Relacionadas <small><i>(Solo favoritos)</i></small> -->
+         Poner buscador por nombre
        </ion-label>
       <ion-button color="danger">
         <ion-icon name="heart-circle"></ion-icon>
       </ion-button>
-    </ion-list-header>
+    </ion-list-header> -->
 
-    <app-item-game></app-item-game>
-    <app-item-game></app-item-game>
+    <ng-container *ngFor="let game of gamesSearched">
+      <app-item-game *ngIf="game !== currentGame" [game]="game" (clicked)="onClickOnGame($event)"></app-item-game>
+    </ng-container>
+
+
 
   </ion-list>
 

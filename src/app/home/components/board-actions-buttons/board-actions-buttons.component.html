@@ -1,23 +1,26 @@
 <ion-row>
-  <ion-col size="3">
-    <ion-button fill="clear" size="small">
+  <ion-col size="3" class="ion-text-center">
+    <ion-button mode="ios" size="small" (click)="clickNew($event)">
       Nueva
     </ion-button>
   </ion-col>
-  <ion-col offset="1" size="8" class="ion-text-center" >
-    <ion-button size="small" color="dark" fill="clear" disabled>
+  <ion-col offset="1" size="8" class="ion-text-center">
+
+    <ion-button (click)="emitMoveBackAll()" size="small" color="dark" fill="clear" [disabled]="isFirstMove">
       <ion-icon slot="icon-only" name="play-skip-back-outline"></ion-icon>
     </ion-button>
 
-    <ion-button size="small" color="dark" fill="clear" class="ion-margin-end" disabled>
+    <ion-button (click)="emitMoveBack()" size="small" color="dark" fill="clear" class="ion-margin-end"
+      [disabled]="isFirstMove">
       <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
     </ion-button>
 
-    <ion-button size="small" color="dark" fill="clear" class="ion-margin-start" >
+    <ion-button (click)="emitMoveFront()" size="small" color="dark" fill="clear" class="ion-margin-start"
+      [disabled]="isLastMove">
       <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
     </ion-button>
 
-    <ion-button size="small" color="dark" fill="clear">
+    <ion-button (click)="emitMoveFrontAll()" size="small" color="dark" fill="clear" [disabled]="isLastMove">
       <ion-icon slot="icon-only" name="play-skip-forward-outline"></ion-icon>
     </ion-button>
 
