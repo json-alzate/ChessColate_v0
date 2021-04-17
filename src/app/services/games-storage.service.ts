@@ -25,7 +25,6 @@ export class GamesStorageService {
 
 
   async loadGames() {
-
     this.observerGames = new Observable(observer => {
       Storage.get({
         key: 'ChessColate_games'
@@ -36,7 +35,6 @@ export class GamesStorageService {
     });
 
     this.observerGames.subscribe();
-
   }
 
 
@@ -54,6 +52,9 @@ export class GamesStorageService {
 
 
   updateGame(game: Game) {
+
+    delete game.currentMoveNumber;
+
     Storage.get({
       key: 'ChessColate_games'
     }).then(data => {
@@ -77,6 +78,8 @@ export class GamesStorageService {
 
 
   saveGame(game: Game) {
+
+    delete game.currentMoveNumber;
 
     Storage.get({
       key: 'ChessColate_games'

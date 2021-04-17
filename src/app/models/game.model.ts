@@ -11,4 +11,5 @@ export interface Game {
     pgn?: string;
     isShowing?: boolean;
     inFavorites?: boolean;
+    currentMoveNumber?: number;
 }

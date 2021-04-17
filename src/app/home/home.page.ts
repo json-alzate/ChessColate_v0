@@ -80,18 +80,23 @@ export class HomePage implements OnInit {
           const theMove = this.chessInstance.move(objectMove);
 
           if (theMove) {
-            this.board.setPosition(this.chessInstance.fen());
-            if (this.currentGame) {
-              // TODO validar tercera forma de nuevo (cuando el movimiento no es el ultimo y es diferente al que sigue)
-              // se guarda el movimiento en la partida
-              this.currentGame.pgn = this.chessInstance.pgn(); // 1.e4 e5 2.Cc3
-              this.currentGame.moves = [...this.currentGame.moves, objectMove];
-              this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.board.getPosition()];              
-              this.gamesStorageService.updateGame(this.currentGame);
+            this.board.setPosition(this.chessInstance.fen()).then(() => {
 
-            } else {
-              this.presentAlertPrompt(objectMove);
-            }
+              if (this.currentGame) {
+                // TODO validar tercera forma de nuevo (cuando el movimiento no es el ultimo y es diferente al que sigue)
+                // se guarda el movimiento en la partida
+                this.currentGame.pgn = this.chessInstance.pgn(); // 1.e4 e5 2.Cc3
+                this.currentGame.moves = [...this.currentGame.moves, objectMove];
+                this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.board.getPosition()];
+                console.log(this.currentGame.movesFEN);
+
+                this.gamesStorageService.updateGame(this.currentGame);
+
+              } else {
+                this.presentAlertPrompt(objectMove);
+              }
+            });
+
 
           }
           // return true, if input is accepted/valid, `false` takes the move back
@@ -114,13 +119,13 @@ export class HomePage implements OnInit {
 
     const { data } = await popover.onDidDismiss();
     if (data && data === 'new') {
-      this.presentAlertPrompt();
+      this.presentAlertPrompt(null, 'new');
     }
 
   }
 
 
-  async presentAlertPrompt(move?: Move) {
+  async presentAlertPrompt(move?: Move, fromPopover?: 'new' | 'current') {
     const alert = await this.alertController.create({
       message: 'Escribe un nombre para guardarla',
       backdropDismiss: false,
@@ -139,6 +144,9 @@ export class HomePage implements OnInit {
         }, {
           text: 'Guardar',
           handler: (data) => {
+            if (fromPopover === 'new') {
+              this.setBoardPosition('start');
+            }
             this.newGame(data.name, move);
           }
         }
@@ -147,7 +155,6 @@ export class HomePage implements OnInit {
 
     await alert.present();
   }
-
 
   newGame(name: string, move?: Move) {
     const currentPosition = this.board.getPosition();
@@ -171,15 +178,73 @@ export class HomePage implements OnInit {
 
 
   onClickOnGame(game: Game) {
-
-    this.board.setPosition(game.movesFEN[0], true);
-    this.chessInstance.clear();
-    this.chessInstance.load_pgn(game.pgn);
+    this.setBoardPosition(game.movesFEN[0]);
     this.currentGame = game;
-
-    console.log(this.chessInstance.pgn());
-  
+    this.currentGame.currentMoveNumber = 0;
+    this.isFirstMove = true;
+    this.isLastMove = game.movesFEN[0].length === 1 ? true : false;
   }
+
+
+
+  setBoardPosition(fen: string) {
+    this.board.setPosition(fen, true);
+    this.chessInstance.clear();
+    this.chessInstance.load_pgn(`[fen "${fen}"]`);
+  }
+
+
+
+
+  moveInitial() {
+    this.currentGame.currentMoveNumber = 0;
+    this.isFirstMove = true;
+    this.isLastMove = false;
+    const fen = this.currentGame.movesFEN[0];
+    this.setBoardPosition(fen);
+  }
+
+  moveBack() {
+    if (this.currentGame.currentMoveNumber < 0) {
+
+      this.currentGame.currentMoveNumber = this.currentGame.currentMoveNumber - 1;
+      const fen = this.currentGame.movesFEN[this.currentGame.currentMoveNumber];
+
+      if (this.currentGame.currentMoveNumber > 1) {
+        this.isFirstMove = true;
+      }
+      if (this.currentGame.currentMoveNumber < (this.currentGame.movesFEN.length - 1) && this.isLastMove) {
+        this.isLastMove = false;
+      }
+
+      this.setBoardPosition(fen);
+    }
+  }
+
+  moveNext() {
+    if (this.currentGame.currentMoveNumber < 0) {
+
+      this.currentGame.currentMoveNumber = this.currentGame.currentMoveNumber - 1;
+      const fen = this.currentGame.movesFEN[this.currentGame.currentMoveNumber];
+
+      if (this.currentGame.currentMoveNumber > 1) {
+        this.isFirstMove = true;
+      }
+
+      this.setBoardPosition(fen);
+    }
+  }
+
+  moveEnd() {
+    const movesLength = this.currentGame.movesFEN.length - 1;
+    this.currentGame.currentMoveNumber = movesLength;
+    this.isLastMove = true;
+    this.isFirstMove = false;
+    const fen = this.currentGame.movesFEN[movesLength];
+    this.setBoardPosition(fen);
+  }
+
+
 
 
   openSettings() { }
