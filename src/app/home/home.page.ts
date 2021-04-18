@@ -205,32 +205,28 @@ export class HomePage implements OnInit {
   }
 
   moveBack() {
-    if (this.currentGame.currentMoveNumber < 0) {
+    if (this.currentGame.currentMoveNumber > 0) {
 
       this.currentGame.currentMoveNumber = this.currentGame.currentMoveNumber - 1;
       const fen = this.currentGame.movesFEN[this.currentGame.currentMoveNumber];
 
-      if (this.currentGame.currentMoveNumber > 1) {
+      if (this.currentGame.currentMoveNumber < 1) {
         this.isFirstMove = true;
       }
-      if (this.currentGame.currentMoveNumber < (this.currentGame.movesFEN.length - 1) && this.isLastMove) {
-        this.isLastMove = false;
-      }
-
+      this.isLastMove = false;
       this.setBoardPosition(fen);
     }
   }
 
   moveNext() {
-    if (this.currentGame.currentMoveNumber < 0) {
 
-      this.currentGame.currentMoveNumber = this.currentGame.currentMoveNumber - 1;
+    if (this.currentGame.currentMoveNumber < this.currentGame.movesFEN.length - 1) {
+      this.currentGame.currentMoveNumber = this.currentGame.currentMoveNumber + 1;
       const fen = this.currentGame.movesFEN[this.currentGame.currentMoveNumber];
-
-      if (this.currentGame.currentMoveNumber > 1) {
-        this.isFirstMove = true;
+      if (this.currentGame.currentMoveNumber === this.currentGame.movesFEN.length - 1) {
+        this.isLastMove = true;
       }
-
+      this.isFirstMove = false;
       this.setBoardPosition(fen);
     }
   }
