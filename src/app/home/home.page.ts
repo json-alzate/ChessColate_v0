@@ -66,6 +66,7 @@ export class HomePage implements OnInit {
   async loadBoard() {
     this.board = await new Chessboard(document.getElementById('board1'), {
       position: 'start',
+      sprite: { url: '/assets/images/chessboard-sprite.svg' },
       moveInputMode: MOVE_INPUT_MODE.dragPiece
     });
     this.board.enableMoveInput((event) => {
@@ -81,7 +82,8 @@ export class HomePage implements OnInit {
 
           if (theMove) {
             this.board.setPosition(this.chessInstance.fen()).then(() => {
-
+              this.isLastMove = false;
+              this.isFirstMove = false;
               if (this.currentGame) {
                 // TODO validar tercera forma de nuevo (cuando el movimiento no es el ultimo y es diferente al que sigue)
                 // se guarda el movimiento en la partida
@@ -98,8 +100,7 @@ export class HomePage implements OnInit {
                 this.presentAlertPrompt(objectMove);
               }
             });
-
-
+            this.changeDetectorRef.markForCheck();
           }
           // return true, if input is accepted/valid, `false` takes the move back
           return theMove;
@@ -160,9 +161,7 @@ export class HomePage implements OnInit {
 
   newGame(name: string, move?: Move) {
     // const currentPosition = this.board.getPosition();
-    console.log(this.chessInstance.history());
-
-    const currentPosition = this.chessInstance.fen();
+    const currentPosition = move ? [this.chessInstance.fen()] : [];
     let moves = [];
     if (move) {
       moves = [move];
@@ -170,7 +169,7 @@ export class HomePage implements OnInit {
     const newObject: Game = {
       id: uuidv4(),
       name,
-      movesFEN: [currentPosition],
+      movesFEN: currentPosition,
       movesHuman: this.chessInstance.pgn(),
       movesHumanHistoryRow: this.chessInstance.history(),
       moves,
@@ -184,32 +183,30 @@ export class HomePage implements OnInit {
 
 
   onClickOnGame(game: Game) {
-    console.log(game);
+    console.log(game.movesFEN.length);
 
     this.setBoardPosition(game.movesFEN[0]);
     this.currentGame = game;
     this.currentGame.currentMoveNumber = 0;
-    this.isFirstMove = true;
-    this.isLastMove = game.movesFEN[0].length === 1 ? true : false;
+    this.isFirstMove = game.movesFEN.length >= 0 ? true : false;
+    this.isLastMove = (game.movesFEN.length <= 1) ? true : false;
   }
 
 
 
   setBoardPosition(fen: string) {
 
-    console.log(fen);
-
-    this.board.setPosition(fen, true).then(() => {
-      this.chessInstance.load(fen);
-      console.log(this.chessInstance.load(fen));
-
-    });
+    if (fen) {
+      this.board.setPosition(fen, true).then(() => {
+        this.chessInstance.load(fen);
+        console.log(this.chessInstance.load(fen));
+      });
+    }
 
   }
 
 
-
-
+  // Navigation in game
   moveInitial() {
     this.currentGame.currentMoveNumber = 0;
     this.isFirstMove = true;
@@ -254,6 +251,17 @@ export class HomePage implements OnInit {
     this.setBoardPosition(fen);
   }
 
+
+  // Favorites
+  addToFavorites() {
+    this.currentGame.inFavorites = true;
+    this.gamesStorageService.updateGame(this.currentGame);
+  }
+
+  removeFromFavorites() {
+    this.currentGame.inFavorites = false;
+    this.gamesStorageService.updateGame(this.currentGame);
+  }
 
 
 

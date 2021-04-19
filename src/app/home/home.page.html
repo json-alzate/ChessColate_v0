@@ -5,14 +5,18 @@
       {{ currentGame?.name }}
     </ion-title>
     <ion-buttons slot="end">
-      <ion-button color="danger" disabled>
-        <!-- <ion-icon slot="icon-only" name="heart-outline"></ion-icon> -->
-        <!-- <ion-icon slot="icon-only" name="heart"></ion-icon> -->
-        <ion-icon slot="icon-only" name="heart-dislike-outline"></ion-icon>
+      <ion-button color="danger" *ngIf="currentGame && !currentGame?.inFavorites" (click)="addToFavorites()">
+        <ion-icon slot="icon-only" name="heart-outline"></ion-icon>
       </ion-button>
-      <!-- <ion-button (click)="openSettings()">
+      <ion-button *ngIf="currentGame?.inFavorites" color="danger" (click)="removeFromFavorites()">
+        <ion-icon slot="icon-only" name="heart"></ion-icon>
+      </ion-button>
+      <ion-button color="danger"*ngIf="!currentGame" disabled  >
+        <ion-icon  slot="icon-only" name="heart-dislike-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="openSettings()">
         <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
-      </ion-button> -->
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -25,7 +29,7 @@
   </div>
 
   <app-board-actions-buttons [isFirstMove]="isFirstMove" [isLastMove]="isLastMove" (newGame)="openNewChoose($event)"
-    (moveBack)="moveBack()" (moveInitial)="moveInitial()" (moveNext)="moveNext()" (moveEnd)="moveEnd()" >
+    (moveBack)="moveBack()" (moveInitial)="moveInitial()" (moveNext)="moveNext()" (moveEnd)="moveEnd()">
   </app-board-actions-buttons>
 
   <img src="assets/images/separator.png">
