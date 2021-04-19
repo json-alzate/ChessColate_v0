@@ -11,10 +11,11 @@
         {{ game?.name }}
       </h2>
       <p>
-        {{ game?.pgn }}
+        <span [innerHTML]="game?.movesHuman" ></span>
       </p>
     </ion-label>
     <ion-icon *ngIf="game?.inFavorites" class="icon-like" slot="end" color="danger" name="heart-circle"></ion-icon>
   </ion-item>
+
 
 </ion-item-sliding>

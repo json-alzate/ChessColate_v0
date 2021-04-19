@@ -19,10 +19,7 @@ export class BoardActionsButtonsComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
-    console.log(this.isFirstMove);
-
-  }
+  ngOnInit() { }
 
   clickNew($event) {
     this.newGame.emit($event);
@@ -31,12 +28,15 @@ export class BoardActionsButtonsComponent implements OnInit {
   emitMoveBackAll() {
     this.moveInitial.emit();
   }
+
   emitMoveBack() {
     this.moveBack.emit();
   }
+
   emitMoveFront() {
     this.moveNext.emit();
   }
+
   emitMoveFrontAll() {
     this.moveEnd.emit();
   }

@@ -85,11 +85,13 @@ export class HomePage implements OnInit {
               if (this.currentGame) {
                 // TODO validar tercera forma de nuevo (cuando el movimiento no es el ultimo y es diferente al que sigue)
                 // se guarda el movimiento en la partida
-                this.currentGame.pgn = this.chessInstance.pgn(); // 1.e4 e5 2.Cc3
-                this.currentGame.moves = [...this.currentGame.moves, objectMove];
-                this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.board.getPosition()];
-                console.log(this.currentGame.movesFEN);
 
+                const chessHistory = this.chessInstance.history();
+                this.currentGame.movesHuman = this.chessInstance.pgn(); // 1.e4 e5 2.Cc3
+                this.currentGame.moves = [...this.currentGame.moves, objectMove];
+                // this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.board.getPosition()];
+                this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.chessInstance.fen()];
+                this.currentGame.movesHumanHistoryRow = [...this.currentGame.movesHumanHistoryRow, chessHistory[chessHistory.length - 1]];
                 this.gamesStorageService.updateGame(this.currentGame);
 
               } else {
@@ -157,7 +159,10 @@ export class HomePage implements OnInit {
   }
 
   newGame(name: string, move?: Move) {
-    const currentPosition = this.board.getPosition();
+    // const currentPosition = this.board.getPosition();
+    console.log(this.chessInstance.history());
+
+    const currentPosition = this.chessInstance.fen();
     let moves = [];
     if (move) {
       moves = [move];
@@ -166,7 +171,8 @@ export class HomePage implements OnInit {
       id: uuidv4(),
       name,
       movesFEN: [currentPosition],
-      pgn: this.chessInstance.pgn(),
+      movesHuman: this.chessInstance.pgn(),
+      movesHumanHistoryRow: this.chessInstance.history(),
       moves,
       isShowing: true,
       inFavorites: false
@@ -178,6 +184,8 @@ export class HomePage implements OnInit {
 
 
   onClickOnGame(game: Game) {
+    console.log(game);
+
     this.setBoardPosition(game.movesFEN[0]);
     this.currentGame = game;
     this.currentGame.currentMoveNumber = 0;
@@ -188,9 +196,15 @@ export class HomePage implements OnInit {
 
 
   setBoardPosition(fen: string) {
-    this.board.setPosition(fen, true);
-    this.chessInstance.clear();
-    this.chessInstance.load_pgn(`[fen "${fen}"]`);
+
+    console.log(fen);
+
+    this.board.setPosition(fen, true).then(() => {
+      this.chessInstance.load(fen);
+      console.log(this.chessInstance.load(fen));
+
+    });
+
   }
 
 
