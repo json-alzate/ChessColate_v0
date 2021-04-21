@@ -10,6 +10,8 @@ export class BoardActionsButtonsComponent implements OnInit {
   @Input() isFirstMove: boolean;
   @Input() isLastMove: boolean;
 
+  @Input() turn: 'white' | 'black';
+
   @Output() newGame = new EventEmitter();
 
   @Output() moveBack = new EventEmitter();

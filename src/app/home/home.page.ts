@@ -21,6 +21,7 @@ import { NewChooseComponent } from './components/new-choose/new-choose.component
 
 // services
 import { GamesStorageService } from '../services/games-storage.service';
+import { MessagesService } from '../services/messages.service';
 
 @Component({
   selector: 'app-home',
@@ -35,23 +36,22 @@ export class HomePage implements OnInit {
 
   currentGame: Game;
 
-
   isFirstMove = true;
   isLastMove = true;
 
   countGames: number;
 
   gamesSearched: Game[] = [];
+  allGames: Game[] = [];
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
     private modalController: ModalController,
     public popoverController: PopoverController,
     private alertController: AlertController,
-    private gamesStorageService: GamesStorageService
-  ) {
-
-  }
+    private gamesStorageService: GamesStorageService,
+    private messagesService: MessagesService
+  ) { }
 
   ngOnInit(): void {
     this.getGames();
@@ -65,8 +65,8 @@ export class HomePage implements OnInit {
 
     this.gamesStorageService.getGames().then(data => {
       this.gamesSearched = JSON.parse(data.value);
+      this.allGames = JSON.parse(data.value);
       this.countGames = this.gamesSearched ? this.gamesSearched.length : 0;
-      console.log(this.gamesSearched);
     });
 
   }
@@ -104,7 +104,7 @@ export class HomePage implements OnInit {
                 this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.chessInstance.fen()];
                 this.currentGame.movesHumanHistoryRow = [...this.currentGame.movesHumanHistoryRow, chessHistory[chessHistory.length - 1]];
                 this.gamesStorageService.updateGame(this.currentGame);
-
+                this.searchGameByFen(this.chessInstance.fen());
               } else {
                 this.presentAlertPrompt(objectMove);
               }
@@ -120,7 +120,18 @@ export class HomePage implements OnInit {
     this.changeDetectorRef.markForCheck();
   }
 
+  setBoardPosition(fen: string) {
 
+    if (fen) {
+      this.board.setPosition(fen, true).then(() => {
+        this.chessInstance.load(fen);
+        this.searchGameByFen(fen);
+      });
+    }
+
+  }
+
+  // new game
   async openNewChoose(ev) {
     const popover = await this.popoverController.create({
       component: NewChooseComponent,
@@ -135,7 +146,6 @@ export class HomePage implements OnInit {
     }
 
   }
-
 
   async presentAlertPrompt(move?: Move, fromPopover?: 'new' | 'current') {
     const alert = await this.alertController.create({
@@ -188,9 +198,9 @@ export class HomePage implements OnInit {
     this.gamesStorageService.saveGame(newObject);
     this.currentGame = newObject;
     this.getGames();
+    this.messagesService.showToast('Juego creado!');
     this.changeDetectorRef.markForCheck();
   }
-
 
   onClickOnGame(game: Game) {
     console.log(game.movesFEN.length);
@@ -202,18 +212,6 @@ export class HomePage implements OnInit {
     this.isLastMove = (game.movesFEN.length <= 1) ? true : false;
   }
 
-
-
-  setBoardPosition(fen: string) {
-
-    if (fen) {
-      this.board.setPosition(fen, true).then(() => {
-        this.chessInstance.load(fen);
-        console.log(this.chessInstance.load(fen));
-      });
-    }
-
-  }
 
 
   // Navigation in game
@@ -273,9 +271,27 @@ export class HomePage implements OnInit {
     this.gamesStorageService.updateGame(this.currentGame);
   }
 
+  // delete
+  onDeleteGame(game: Game) {
+    this.gamesStorageService.deleteGame(game).then(() => {
+      this.getGames();
+      this.messagesService.showToast('Juego eliminado...', 'danger');
+    });
+  }
 
-  onDeleteGame(game: Game){
-    this.gamesStorageService.deleteGame(game).then(() => this.getGames());
+  // search
+  searchGameByFen(fen: string) {
+    if (this.allGames) {
+      const gamesResult: Game[] = [];
+      this.allGames.forEach(game => {
+        const find = game.movesFEN.find(moveFen => moveFen === fen);
+        if (find) {
+          gamesResult.push(game);
+        }
+      });
+      this.gamesSearched = gamesResult;
+      this.changeDetectorRef.markForCheck();
+    }
   }
 
 
