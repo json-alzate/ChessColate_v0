@@ -5,16 +5,17 @@
     </ion-item-option>
   </ion-item-options>
 
-  <ion-item (click)="onClickItem()" >
+  <ion-item (click)="onClickItem()">
     <ion-label>
       <h2>
         {{ game?.name }}
       </h2>
       <p>
-        <span [innerHTML]="game?.movesHuman" ></span>
+        <span [innerHTML]="game?.movesHuman"></span>
       </p>
     </ion-label>
     <ion-icon *ngIf="game?.inFavorites" class="icon-like" slot="end" color="danger" name="heart-circle"></ion-icon>
+    <ion-icon slot="end" name="open-outline"></ion-icon>
   </ion-item>
 
 

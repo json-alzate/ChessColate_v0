@@ -44,6 +44,8 @@ export class HomePage implements OnInit {
   gamesSearched: Game[] = [];
   allGames: Game[] = [];
 
+  loadingDots: boolean;
+
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
     private modalController: ModalController,
@@ -67,6 +69,7 @@ export class HomePage implements OnInit {
       this.gamesSearched = JSON.parse(data.value);
       this.allGames = JSON.parse(data.value);
       this.countGames = this.gamesSearched ? this.gamesSearched.length : 0;
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -129,6 +132,12 @@ export class HomePage implements OnInit {
       });
     }
 
+  }
+
+
+  doRefresh() {
+    this.currentGame = null;
+    this.setBoardPosition('start');
   }
 
   // new game
@@ -281,15 +290,23 @@ export class HomePage implements OnInit {
 
   // search
   searchGameByFen(fen: string) {
+    this.loadingDots = true;
+    if (fen === 'start') {
+      this.getGames();
+      this.loadingDots = false;
+      return;
+    }
     if (this.allGames) {
       const gamesResult: Game[] = [];
       this.allGames.forEach(game => {
         const find = game.movesFEN.find(moveFen => moveFen === fen);
-        if (find) {
+
+        if (find && game.id !== this.currentGame.id) {
           gamesResult.push(game);
         }
       });
       this.gamesSearched = gamesResult;
+      this.loadingDots = false;
       this.changeDetectorRef.markForCheck();
     }
   }
