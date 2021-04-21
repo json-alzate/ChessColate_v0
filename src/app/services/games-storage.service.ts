@@ -18,38 +18,17 @@ import { Game } from '../models/game.model';
 })
 export class GamesStorageService {
 
-  public games;
-  public observerGames: Observable<Game[]>;
 
   constructor() { }
 
 
-  async loadGames() {
-    this.observerGames = new Observable(observer => {
-      Storage.get({
-        key: 'ChessColate_games'
-      }).then(data => {
-        this.games = JSON.parse(data.value);
-        observer.next(this.games);
-      });
+  getGames() {
+
+    return Storage.get({
+      key: 'ChessColate_games'
     });
 
-    this.observerGames.subscribe();
   }
-
-
-  getGames() {
-    if (!this.games) {
-      this.loadGames();
-    }
-    return this.games;
-  }
-
-
-  getObserverGames() {
-    return this.observerGames;
-  }
-
 
   updateGame(game: Game) {
 
@@ -100,6 +79,20 @@ export class GamesStorageService {
       }
     });
 
+  }
+
+
+ async deleteGame(game: Game) {
+    return await Storage.get({
+      key: 'ChessColate_games'
+    }).then(data => {
+      const games = JSON.parse(data.value) as Game[];
+      games.splice(games.findIndex(a => a.id === game.id), 1);
+      Storage.set({
+        key: 'ChessColate_games',
+        value: JSON.stringify(games)
+      });
+    });
   }
 
 }

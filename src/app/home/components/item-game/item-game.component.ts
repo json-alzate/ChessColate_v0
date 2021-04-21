@@ -16,6 +16,7 @@ export class ItemGameComponent implements OnInit {
     this.setHumanMoves(game);
   }
   @Output() clicked = new EventEmitter<Game>();
+  @Output() delete = new EventEmitter<Game>();
 
   constructor() { }
 
@@ -56,6 +57,10 @@ export class ItemGameComponent implements OnInit {
 
     game.movesHuman = movesHuman;
     this.game = game;
+  }
+
+  deleteGame() {
+    this.delete.emit(this.game);
   }
 
 }

@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 
-// services
-import { GamesStorageService } from './services/games-storage.service';
 
 @Component({
   selector: 'app-root',
@@ -10,8 +8,5 @@ import { GamesStorageService } from './services/games-storage.service';
 })
 export class AppComponent {
   constructor(
-    private gamesStorageService: GamesStorageService
-  ) {
-    this.gamesStorageService.loadGames();
-  }
+  ) { }
 }

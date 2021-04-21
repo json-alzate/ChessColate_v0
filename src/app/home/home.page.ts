@@ -54,12 +54,21 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.gamesSearched = this.gamesStorageService.getGames();
-    this.countGames = this.gamesSearched ? this.gamesSearched.length : 0;
+    this.getGames();
   }
 
   ionViewDidEnter() {
     this.loadBoard();
+  }
+
+  getGames() {
+
+    this.gamesStorageService.getGames().then(data => {
+      this.gamesSearched = JSON.parse(data.value);
+      this.countGames = this.gamesSearched ? this.gamesSearched.length : 0;
+      console.log(this.gamesSearched);
+    });
+
   }
 
 
@@ -121,8 +130,8 @@ export class HomePage implements OnInit {
     await popover.present();
 
     const { data } = await popover.onDidDismiss();
-    if (data && data === 'new') {
-      this.presentAlertPrompt(null, 'new');
+    if (data) {
+      this.presentAlertPrompt(null, data);
     }
 
   }
@@ -178,6 +187,7 @@ export class HomePage implements OnInit {
     };
     this.gamesStorageService.saveGame(newObject);
     this.currentGame = newObject;
+    this.getGames();
     this.changeDetectorRef.markForCheck();
   }
 
@@ -263,6 +273,10 @@ export class HomePage implements OnInit {
     this.gamesStorageService.updateGame(this.currentGame);
   }
 
+
+  onDeleteGame(game: Game){
+    this.gamesStorageService.deleteGame(game).then(() => this.getGames());
+  }
 
 
   openSettings() { }
