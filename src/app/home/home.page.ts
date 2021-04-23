@@ -38,6 +38,7 @@ export class HomePage implements OnInit {
 
   isFirstMove = true;
   isLastMove = true;
+  turn: 'white' | 'black';
 
   countGames: number;
 
@@ -81,6 +82,8 @@ export class HomePage implements OnInit {
       sprite: { url: '/assets/images/chessboard-sprite.svg' },
       moveInputMode: MOVE_INPUT_MODE.dragPiece
     });
+
+
     this.board.enableMoveInput((event) => {
       // handle user input here
       switch (event.type) {
@@ -89,10 +92,18 @@ export class HomePage implements OnInit {
           // return `true`, if input is accepted/valid, `false` aborts the interaction, the piece will not move
           return true;
         case INPUT_EVENT_TYPE.moveDone:
+
+
           const objectMove = { from: event.squareFrom, to: event.squareTo };
           const theMove = this.chessInstance.move(objectMove);
-
           if (theMove) {
+
+            if (  theMove.color === 'b' ) {
+              this.turn = 'white';
+            } else {
+              this.turn = 'black';
+            }
+
             this.board.setPosition(this.chessInstance.fen()).then(() => {
               this.isLastMove = false;
               this.isFirstMove = false;
@@ -137,7 +148,10 @@ export class HomePage implements OnInit {
 
   doRefresh() {
     this.currentGame = null;
+    this.isFirstMove = true;
+    this.isLastMove = true;
     this.setBoardPosition('start');
+    this.turn = 'white';
   }
 
   // new game
