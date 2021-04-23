@@ -10,35 +10,37 @@ export class BoardActionsButtonsComponent implements OnInit {
   @Input() isFirstMove: boolean;
   @Input() isLastMove: boolean;
 
+  @Input() turn: 'white' | 'black';
+
   @Output() newGame = new EventEmitter();
 
   @Output() moveBack = new EventEmitter();
-  @Output() moveBackAll = new EventEmitter();
-  @Output() moveFront = new EventEmitter();
-  @Output() moveFrontAll = new EventEmitter();
+  @Output() moveInitial = new EventEmitter();
+  @Output() moveNext = new EventEmitter();
+  @Output() moveEnd = new EventEmitter();
 
   constructor() { }
 
-  ngOnInit() {
-    console.log(this.isFirstMove);
-    
-   }
+  ngOnInit() { }
 
   clickNew($event) {
     this.newGame.emit($event);
   }
 
-  emitMoveBackAll(){
-    this.moveBackAll.emit();
+  emitMoveBackAll() {
+    this.moveInitial.emit();
   }
-  emitMoveBack(){
+
+  emitMoveBack() {
     this.moveBack.emit();
   }
-  emitMoveFront(){
-    this.moveFront.emit();
+
+  emitMoveFront() {
+    this.moveNext.emit();
   }
-  emitMoveFrontAll(){
-    this.moveFrontAll.emit();
+
+  emitMoveFrontAll() {
+    this.moveEnd.emit();
   }
 
 }

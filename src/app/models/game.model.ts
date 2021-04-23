@@ -8,7 +8,9 @@ export interface Game {
     name: string;
     movesFEN: string[];
     moves: Move[];
-    pgn?: string;
+    movesHuman?: string;
+    movesHumanHistoryRow?: string[];
     isShowing?: boolean;
     inFavorites?: boolean;
+    currentMoveNumber?: number;
 }

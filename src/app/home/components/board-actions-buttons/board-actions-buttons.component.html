@@ -4,7 +4,7 @@
       Nueva
     </ion-button>
   </ion-col>
-  <ion-col offset="1" size="8" class="ion-text-center">
+  <ion-col size="8" class="ion-text-center">
 
     <ion-button (click)="emitMoveBackAll()" size="small" color="dark" fill="clear" [disabled]="isFirstMove">
       <ion-icon slot="icon-only" name="play-skip-back-outline"></ion-icon>
@@ -24,5 +24,10 @@
       <ion-icon slot="icon-only" name="play-skip-forward-outline"></ion-icon>
     </ion-button>
 
+  </ion-col>
+
+  <ion-col size="1">
+    <div class="div-turn" [ngClass]="{'white-turn': !turn || turn === 'white', 'black-turn': turn && turn === 'black' }">
+    </div>
   </ion-col>
 </ion-row>
