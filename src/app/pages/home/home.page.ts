@@ -14,14 +14,17 @@ import {
 
 
 // models
-import { Game, Move } from '../models/game.model';
+import { Game, Move } from '../../models/game.model';
+import { Phrase } from '../../models/phrase.model';
 
 // components
 import { NewChooseComponent } from './components/new-choose/new-choose.component';
 
 // services
-import { GamesStorageService } from '../services/games-storage.service';
-import { MessagesService } from '../services/messages.service';
+import { GamesStorageService } from '../../services/games-storage.service';
+import { MessagesService } from '../../services/messages.service';
+import { PhrasesService } from '../../services/phrases.service';
+
 
 @Component({
   selector: 'app-home',
@@ -47,16 +50,26 @@ export class HomePage implements OnInit {
 
   loadingDots: boolean;
 
+  activeSplash = true;
+  phrase: Phrase;
+
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
     private modalController: ModalController,
     public popoverController: PopoverController,
     private alertController: AlertController,
     private gamesStorageService: GamesStorageService,
-    private messagesService: MessagesService
-  ) { }
+    private messagesService: MessagesService,
+    private phrasesService: PhrasesService
+  ) {
+    this.phrase = this.phrasesService.getOnePhrase();
+  }
 
   ngOnInit(): void {
+    setTimeout(() => {
+      this.activeSplash = false;
+      this.changeDetectorRef.markForCheck();
+    }, 3000);
     this.getGames();
   }
 
@@ -98,7 +111,7 @@ export class HomePage implements OnInit {
           const theMove = this.chessInstance.move(objectMove);
           if (theMove) {
 
-            if (  theMove.color === 'b' ) {
+            if (theMove.color === 'b') {
               this.turn = 'white';
             } else {
               this.turn = 'black';
