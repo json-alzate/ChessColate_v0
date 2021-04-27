@@ -239,8 +239,6 @@ export class HomePage implements OnInit {
   }
 
   onClickOnGame(game: Game) {
-    console.log(game.movesFEN.length);
-
     this.setBoardPosition(game.movesFEN[0]);
     this.currentGame = game;
     this.currentGame.currentMoveNumber = 0;
@@ -317,6 +315,10 @@ export class HomePage implements OnInit {
 
   // search
   searchGameByFen(fen: string) {
+
+    console.log('the fen to search ', fen);
+
+
     this.loadingDots = true;
     if (fen === 'start') {
       this.getGames();
@@ -326,7 +328,17 @@ export class HomePage implements OnInit {
     if (this.allGames) {
       const gamesResult: Game[] = [];
       this.allGames.forEach(game => {
-        const find = game.movesFEN.find(moveFen => moveFen === fen);
+        console.log(game.movesFEN);
+
+        const find = game.movesFEN.find(moveFen => {
+          const fenGameSpliced = moveFen.split(' ');
+          const fenToSearchSpliced = fen.split(' ');
+
+          if (fenGameSpliced[0] === fenToSearchSpliced[0]) {
+            return moveFen;
+          }
+
+        });
 
         if (find && game.id !== this.currentGame.id) {
           gamesResult.push(game);
