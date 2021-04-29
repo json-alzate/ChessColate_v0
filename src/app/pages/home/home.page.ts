@@ -38,6 +38,7 @@ export class HomePage implements OnInit {
   chessInstance = new Chess();
 
   currentGame: Game;
+  currentFenInBoard: string;
 
   isFirstMove = true;
   isLastMove = true;
@@ -122,17 +123,37 @@ export class HomePage implements OnInit {
               this.isLastMove = false;
               this.isFirstMove = false;
               if (this.currentGame) {
-                // TODO validar tercera forma de nuevo (cuando el movimiento no es el ultimo y es diferente al que sigue)
-                // se guarda el movimiento en la partida
 
-                const chessHistory = this.chessInstance.history();
-                this.currentGame.movesHuman = this.chessInstance.pgn(); // 1.e4 e5 2.Cc3
-                this.currentGame.moves = [...this.currentGame.moves, objectMove];
-                // this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.board.getPosition()];
-                this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.chessInstance.fen()];
-                this.currentGame.movesHumanHistoryRow = [...this.currentGame.movesHumanHistoryRow, chessHistory[chessHistory.length - 1]];
-                this.gamesStorageService.updateGame(this.currentGame);
-                this.searchGameByFen(this.chessInstance.fen());
+                const onStepForward = this.currentGame.currentMoveNumber + 1;
+                if (onStepForward === this.currentGame.movesFEN.length) { // es la ultima jugada
+                  console.log('ultima');
+
+                  // se guarda el movimiento en la partida
+                  const chessHistory = this.chessInstance.history();
+                  this.currentGame.movesHuman = this.chessInstance.pgn(); // 1.e4 e5 2.Cc3
+                  this.currentGame.moves = [...this.currentGame.moves, objectMove];
+                  // this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.board.getPosition()];
+                  this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.chessInstance.fen()];
+                  this.currentGame.movesHumanHistoryRow = [...this.currentGame.movesHumanHistoryRow, chessHistory[chessHistory.length - 1]];
+
+                  this.gamesStorageService.updateGame(this.currentGame);
+                  this.searchGameByFen(this.chessInstance.fen());
+
+                } else {
+
+                  // cuando el movimiento no es el ultimo y es diferente al que sigue
+                  if (this.currentGame.movesFEN[onStepForward] !== this.chessInstance.fen()) {
+
+                    // TODO se debe guardar no solo el movimiento actual, sino el ultimo movimiento de la partida actual, 
+                    // para que lo encuentre el buscador
+                    this.presentAlertPrompt(objectMove, 'current');
+
+                  } else { // si el siguiente movimiento de la partida es igual al que se realiza manualmente
+                    this.moveNext();
+                  }
+                }
+
+
               } else {
                 this.presentAlertPrompt(objectMove);
               }
@@ -156,6 +177,7 @@ export class HomePage implements OnInit {
         if (fen === 'start') {
           fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
         }
+        this.currentFenInBoard = fen;
         this.chessInstance.load(fen);
       });
     }
@@ -206,6 +228,8 @@ export class HomePage implements OnInit {
           handler: () => {
             if (fromPopover === 'new' || !fromPopover) {
               this.doRefresh();
+            } else {
+              // TODO se devuelve la jugada por que se cancelo el guardado de una variante
             }
           }
         }, {
@@ -230,6 +254,8 @@ export class HomePage implements OnInit {
     if (move) {
       moves = [move];
     }
+    // TODO crear dos objetos otro para cuando se guarda desde una posición para que el buscador
+    // lo ubique se guarda con el ultimo historial conocido de la partida actual
     const newObject: Game = {
       id: uuidv4(),
       name,
