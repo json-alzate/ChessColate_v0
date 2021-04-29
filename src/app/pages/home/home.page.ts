@@ -81,6 +81,7 @@ export class HomePage implements OnInit {
 
     this.gamesStorageService.getGames().then(data => {
       this.gamesSearched = JSON.parse(data.value);
+      this.orderGameSearched();
       this.allGames = JSON.parse(data.value);
       this.countGames = this.gamesSearched ? this.gamesSearched.length : 0;
       this.changeDetectorRef.markForCheck();
@@ -151,8 +152,11 @@ export class HomePage implements OnInit {
 
     if (fen) {
       this.board.setPosition(fen, true).then(() => {
-        this.chessInstance.load(fen);
         this.searchGameByFen(fen);
+        if (fen === 'start') {
+          fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+        }
+        this.chessInstance.load(fen);
       });
     }
 
@@ -198,7 +202,12 @@ export class HomePage implements OnInit {
       buttons: [
         {
           text: 'Cancelar',
-          role: 'cancel'
+          role: 'cancel',
+          handler: () => {
+            if (fromPopover === 'new' || !fromPopover) {
+              this.doRefresh();
+            }
+          }
         }, {
           text: 'Guardar',
           handler: (data) => {
@@ -306,6 +315,27 @@ export class HomePage implements OnInit {
   }
 
   // delete
+  async confirmDeleteGame(game: Game) {
+    const alert = await this.alertController.create({
+      header: '¿Eliminar el juego?',
+      message: '<strong>No</strong> podrás recuperarlo.',
+      buttons: [
+        {
+          text: 'Conservar',
+          role: 'cancel',
+        }, {
+          text: 'Eliminar',
+          cssClass: 'alert-btn-one-delete',
+          handler: () => {
+            this.onDeleteGame(game);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
   onDeleteGame(game: Game) {
     this.gamesStorageService.deleteGame(game).then(() => {
       this.getGames();
@@ -316,9 +346,6 @@ export class HomePage implements OnInit {
   // search
   searchGameByFen(fen: string) {
 
-    console.log('the fen to search ', fen);
-
-
     this.loadingDots = true;
     if (fen === 'start') {
       this.getGames();
@@ -328,8 +355,6 @@ export class HomePage implements OnInit {
     if (this.allGames) {
       const gamesResult: Game[] = [];
       this.allGames.forEach(game => {
-        console.log(game.movesFEN);
-
         const find = game.movesFEN.find(moveFen => {
           const fenGameSpliced = moveFen.split(' ');
           const fenToSearchSpliced = fen.split(' ');
@@ -345,9 +370,22 @@ export class HomePage implements OnInit {
         }
       });
       this.gamesSearched = gamesResult;
+      this.orderGameSearched();
       this.loadingDots = false;
       this.changeDetectorRef.markForCheck();
     }
+  }
+
+  orderGameSearched() {
+    this.gamesSearched = this.gamesSearched.sort((obj1, obj2) => {
+      if (obj1.name > obj2.name) {
+        return 1;
+      }
+      if (obj1.name < obj2.name) {
+        return -1;
+      }
+      return 0;
+    });
   }
 
 
