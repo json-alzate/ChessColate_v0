@@ -55,7 +55,7 @@
     <div class="board" id="board1">
     </div>
     <app-board-actions-buttons [isFirstMove]="isFirstMove" [isLastMove]="isLastMove" [turn]="turn"
-      (newGame)="openNewChoose($event)" (moveBack)="moveBack()" (moveInitial)="moveInitial()" (moveNext)="moveNext()"
+      (newGame)="doRefresh()" (moveBack)="moveBack()" (moveInitial)="moveInitial()" (moveNext)="moveNext()"
       (moveEnd)="moveEnd()">
     </app-board-actions-buttons>
 

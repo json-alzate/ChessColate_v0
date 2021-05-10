@@ -18,7 +18,6 @@ import { Game, Move } from '../../models/game.model';
 import { Phrase } from '../../models/phrase.model';
 
 // components
-import { NewChooseComponent } from './components/new-choose/new-choose.component';
 
 // services
 import { GamesStorageService } from '../../services/games-storage.service';
@@ -122,21 +121,14 @@ export class HomePage implements OnInit {
               this.isLastMove = false;
               this.isFirstMove = false;
               if (this.currentGame) {
-
-                console.log('current game ', this.currentGame);
-
                 const currentMoveNumber = this.currentGame.currentMoveNumber;
                 const onStepForward = currentMoveNumber ? currentMoveNumber + 1 : 1;
                 this.currentGame.currentMoveNumber = onStepForward; // revisar que sucede en la navegación si lo suma de mas?
-                console.log('esto ', onStepForward);
 
                 if (onStepForward === this.currentGame.movesFEN.length) { // es la ultima jugada
-                  console.log('0');
 
                   // se guarda el movimiento en la partida
                   const chessHistory = this.chessInstance.history();
-                  // TODO se puede eliminar?
-                  // this.currentGame.movesHuman = this.chessInstance.pgn(); // 1.e4 e5 2.Cc3
                   this.currentGame.moves = [...this.currentGame.moves, objectMove];
                   // this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.board.getPosition()];
                   this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.chessInstance.fen()];
@@ -146,18 +138,13 @@ export class HomePage implements OnInit {
                   this.searchGameByFen(this.chessInstance.fen());
 
                 } else {
-                  console.log('1');
 
                   // cuando el movimiento no es el ultimo y es diferente al que sigue
                   if (this.currentGame.movesFEN[onStepForward] !== this.chessInstance.fen()) {
 
-                    console.log('2');
-                    // TODO se debe guardar no solo el movimiento actual, sino el ultimo movimiento de la partida actual, 
-                    // para que lo encuentre el buscador
                     this.presentAlertPrompt(objectMove, 'current');
 
                   } else { // si el siguiente movimiento de la partida es igual al que se realiza manualmente
-                    console.log('3');
                     this.moveNext();
                   }
                 }
@@ -202,22 +189,8 @@ export class HomePage implements OnInit {
   }
 
   // new game
-  async openNewChoose(ev) {
-    const popover = await this.popoverController.create({
-      component: NewChooseComponent,
-      event: ev
-    });
-
-    await popover.present();
-
-    const { data } = await popover.onDidDismiss();
-    if (data) {
-      this.presentAlertPrompt(null, data);
-    }
-
-  }
-
   async presentAlertPrompt(move?: Move, fromPopover?: 'new' | 'current') {
+
     const alert = await this.alertController.create({
       message: 'Escribe un nombre para guardarla',
       backdropDismiss: false,
@@ -237,7 +210,9 @@ export class HomePage implements OnInit {
             if (fromPopover === 'new' || !fromPopover) {
               this.doRefresh();
             } else {
-              // TODO se devuelve la jugada por que se cancelo el guardado de una variante
+              // se devuelve la jugada por que se cancelo el guardado de una variante
+              this.setBoardPosition(this.currentGame.movesFEN[this.currentGame.currentMoveNumber - 1]);
+              this.currentGame.currentMoveNumber = this.currentGame.currentMoveNumber - 1;
             }
           }
         }, {
@@ -288,8 +263,6 @@ export class HomePage implements OnInit {
       name,
       nameFrom,
       movesFEN,
-      // TODO ¿se puede eliminar?
-      // movesHuman: this.chessInstance.pgn(),
       movesHumanHistoryRow,
       moves,
       isShowing: true,
