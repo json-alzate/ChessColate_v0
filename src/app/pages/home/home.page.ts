@@ -231,7 +231,7 @@ export class HomePage implements OnInit {
       ],
       buttons: [
         {
-          text: 'Cancelar', se esta guardando la jugada del negro dos veces se debe guardar es la ultima jugada del oponente blanco en este caso
+          text: 'Cancelar',
           role: 'cancel',
           handler: () => {
             if (fromPopover === 'new' || !fromPopover) {
@@ -260,9 +260,20 @@ export class HomePage implements OnInit {
     let movesFEN = move ? [this.chessInstance.fen()] : [];
     let moves = [];
     let currentMoveNumber;
+    let nameFrom: string;
+    const movesHumanHistoryRow: string[] = this.chessInstance.history();
 
     if (this.currentGame) {
-      currentMoveNumber = this.currentGame.currentMoveNumber;
+      // se resta 1 para que no guarde el historial con la jugada del mismo color sino del oponente
+      currentMoveNumber = this.currentGame.currentMoveNumber - 1;
+      nameFrom = this.currentGame.name;
+      if (this.turn === 'white') {
+        movesHumanHistoryRow.unshift(this.currentGame.movesHumanHistoryRow[currentMoveNumber]);
+      } else {
+        // importante mantener este orden de unshift
+        movesHumanHistoryRow.unshift(this.currentGame.movesHumanHistoryRow[currentMoveNumber]);
+        movesHumanHistoryRow.unshift('...');
+      }
     }
 
     if (move && !this.currentGame) {
@@ -271,24 +282,15 @@ export class HomePage implements OnInit {
       moves = [this.currentGame.moves[currentMoveNumber], move];
       movesFEN = [this.currentGame.movesFEN[currentMoveNumber], this.chessInstance.fen()];
     }
-    // TODO crear dos objetos otro para cuando se guarda desde una posición para que el buscador
-    // lo ubique se guarda con el ultimo historial conocido de la partida actual
-
-    console.log('juego actual ', this.currentGame);
-    console.log('history  ', this.chessInstance.history());
-    console.log('pgn  ', this.chessInstance.pgn());
-
-
 
     const newObject: Game = {
       id: uuidv4(),
       name,
-
+      nameFrom,
       movesFEN,
       // TODO ¿se puede eliminar?
       // movesHuman: this.chessInstance.pgn(),
-      movesHumanHistoryRow: this.chessInstance.history(),
-
+      movesHumanHistoryRow,
       moves,
       isShowing: true,
       inFavorites: false
