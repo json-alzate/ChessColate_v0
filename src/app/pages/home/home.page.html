@@ -8,7 +8,12 @@
     </ion-buttons>
 
     <ion-title>
-      {{ currentGame?.name }}
+      <span class="span-title-game-header">
+        {{ currentGame?.name }}
+      </span>
+      <span class="span-sub-game-header" *ngIf="currentGame?.nameFrom ">
+        Variante de: <b>{{ currentGame?.nameFrom }}</b>
+      </span>
     </ion-title>
     <ion-buttons slot="end">
       <ion-button color="danger" *ngIf="currentGame && !currentGame?.inFavorites" (click)="addToFavorites()">
@@ -50,7 +55,7 @@
     <div class="board" id="board1">
     </div>
     <app-board-actions-buttons [isFirstMove]="isFirstMove" [isLastMove]="isLastMove" [turn]="turn"
-      (newGame)="openNewChoose($event)" (moveBack)="moveBack()" (moveInitial)="moveInitial()" (moveNext)="moveNext()"
+      (newGame)="doRefresh()" (moveBack)="moveBack()" (moveInitial)="moveInitial()" (moveNext)="moveNext()"
       (moveEnd)="moveEnd()">
     </app-board-actions-buttons>
 

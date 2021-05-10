@@ -6,6 +6,7 @@ export interface Move {
 export interface Game {
     id: string;
     name: string;
+    nameFrom?: string;
     movesFEN: string[];
     moves: Move[];
     movesHuman?: string;

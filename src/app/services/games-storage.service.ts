@@ -32,7 +32,8 @@ export class GamesStorageService {
 
   updateGame(game: Game) {
 
-    delete game.currentMoveNumber;
+    // ¿por que lo eliminaba?  8/05/2021
+    // delete game.currentMoveNumber;
 
     Storage.get({
       key: 'ChessColate_games'
@@ -58,7 +59,8 @@ export class GamesStorageService {
 
   saveGame(game: Game) {
 
-    delete game.currentMoveNumber;
+    // ¿por que lo eliminaba? 8/05/2021
+    // delete game.currentMoveNumber;
 
     Storage.get({
       key: 'ChessColate_games'
@@ -82,7 +84,7 @@ export class GamesStorageService {
   }
 
 
- async deleteGame(game: Game) {
+  async deleteGame(game: Game) {
     return await Storage.get({
       key: 'ChessColate_games'
     }).then(data => {

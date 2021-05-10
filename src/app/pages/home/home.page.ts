@@ -18,7 +18,6 @@ import { Game, Move } from '../../models/game.model';
 import { Phrase } from '../../models/phrase.model';
 
 // components
-import { NewChooseComponent } from './components/new-choose/new-choose.component';
 
 // services
 import { GamesStorageService } from '../../services/games-storage.service';
@@ -122,17 +121,35 @@ export class HomePage implements OnInit {
               this.isLastMove = false;
               this.isFirstMove = false;
               if (this.currentGame) {
-                // TODO validar tercera forma de nuevo (cuando el movimiento no es el ultimo y es diferente al que sigue)
-                // se guarda el movimiento en la partida
+                const currentMoveNumber = this.currentGame.currentMoveNumber;
+                const onStepForward = currentMoveNumber ? currentMoveNumber + 1 : 1;
+                this.currentGame.currentMoveNumber = onStepForward; // revisar que sucede en la navegación si lo suma de mas?
 
-                const chessHistory = this.chessInstance.history();
-                this.currentGame.movesHuman = this.chessInstance.pgn(); // 1.e4 e5 2.Cc3
-                this.currentGame.moves = [...this.currentGame.moves, objectMove];
-                // this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.board.getPosition()];
-                this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.chessInstance.fen()];
-                this.currentGame.movesHumanHistoryRow = [...this.currentGame.movesHumanHistoryRow, chessHistory[chessHistory.length - 1]];
-                this.gamesStorageService.updateGame(this.currentGame);
-                this.searchGameByFen(this.chessInstance.fen());
+                if (onStepForward === this.currentGame.movesFEN.length) { // es la ultima jugada
+
+                  // se guarda el movimiento en la partida
+                  const chessHistory = this.chessInstance.history();
+                  this.currentGame.moves = [...this.currentGame.moves, objectMove];
+                  // this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.board.getPosition()];
+                  this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.chessInstance.fen()];
+                  this.currentGame.movesHumanHistoryRow = [...this.currentGame.movesHumanHistoryRow, chessHistory[chessHistory.length - 1]];
+
+                  this.gamesStorageService.updateGame(this.currentGame);
+                  this.searchGameByFen(this.chessInstance.fen());
+
+                } else {
+
+                  // cuando el movimiento no es el ultimo y es diferente al que sigue
+                  if (this.currentGame.movesFEN[onStepForward] !== this.chessInstance.fen()) {
+
+                    this.presentAlertPrompt(objectMove, 'current');
+
+                  } else { // si el siguiente movimiento de la partida es igual al que se realiza manualmente
+                    this.moveNext();
+                  }
+                }
+
+
               } else {
                 this.presentAlertPrompt(objectMove);
               }
@@ -172,22 +189,8 @@ export class HomePage implements OnInit {
   }
 
   // new game
-  async openNewChoose(ev) {
-    const popover = await this.popoverController.create({
-      component: NewChooseComponent,
-      event: ev
-    });
-
-    await popover.present();
-
-    const { data } = await popover.onDidDismiss();
-    if (data) {
-      this.presentAlertPrompt(null, data);
-    }
-
-  }
-
   async presentAlertPrompt(move?: Move, fromPopover?: 'new' | 'current') {
+
     const alert = await this.alertController.create({
       message: 'Escribe un nombre para guardarla',
       backdropDismiss: false,
@@ -206,6 +209,10 @@ export class HomePage implements OnInit {
           handler: () => {
             if (fromPopover === 'new' || !fromPopover) {
               this.doRefresh();
+            } else {
+              // se devuelve la jugada por que se cancelo el guardado de una variante
+              this.setBoardPosition(this.currentGame.movesFEN[this.currentGame.currentMoveNumber - 1]);
+              this.currentGame.currentMoveNumber = this.currentGame.currentMoveNumber - 1;
             }
           }
         }, {
@@ -224,22 +231,45 @@ export class HomePage implements OnInit {
   }
 
   newGame(name: string, move?: Move) {
-    // const currentPosition = this.board.getPosition();
-    const currentPosition = move ? [this.chessInstance.fen()] : [];
+
+    let movesFEN = move ? [this.chessInstance.fen()] : [];
     let moves = [];
-    if (move) {
-      moves = [move];
+    let currentMoveNumber;
+    let nameFrom: string;
+    const movesHumanHistoryRow: string[] = this.chessInstance.history();
+
+    if (this.currentGame) {
+      // se resta 1 para que no guarde el historial con la jugada del mismo color sino del oponente
+      currentMoveNumber = this.currentGame.currentMoveNumber - 1;
+      nameFrom = this.currentGame.name;
+      if (this.turn === 'white') {
+        movesHumanHistoryRow.unshift(this.currentGame.movesHumanHistoryRow[currentMoveNumber]);
+      } else {
+        // importante mantener este orden de unshift
+        movesHumanHistoryRow.unshift(this.currentGame.movesHumanHistoryRow[currentMoveNumber]);
+        movesHumanHistoryRow.unshift('...');
+      }
     }
+
+    if (move && !this.currentGame) {
+      moves = [move];
+    } else if (move && this.currentGame) {
+      moves = [this.currentGame.moves[currentMoveNumber], move];
+      movesFEN = [this.currentGame.movesFEN[currentMoveNumber], this.chessInstance.fen()];
+    }
+
     const newObject: Game = {
       id: uuidv4(),
       name,
-      movesFEN: currentPosition,
-      movesHuman: this.chessInstance.pgn(),
-      movesHumanHistoryRow: this.chessInstance.history(),
+      nameFrom,
+      movesFEN,
+      movesHumanHistoryRow,
       moves,
       isShowing: true,
       inFavorites: false
     };
+
+
     this.gamesStorageService.saveGame(newObject);
     this.currentGame = newObject;
     this.getGames();
@@ -318,7 +348,8 @@ export class HomePage implements OnInit {
   async confirmDeleteGame(game: Game) {
     const alert = await this.alertController.create({
       header: '¿Eliminar el juego?',
-      message: '<strong>No</strong> podrás recuperarlo.',
+      message: 'No podrás recuperarlo.',
+      cssClass: 'ion-text-center',
       buttons: [
         {
           text: 'Conservar',
@@ -377,7 +408,7 @@ export class HomePage implements OnInit {
   }
 
   orderGameSearched() {
-    this.gamesSearched = this.gamesSearched.sort((obj1, obj2) => {
+    const temSearched = this.gamesSearched?.sort((obj1, obj2) => {
       if (obj1.name > obj2.name) {
         return 1;
       }
@@ -386,6 +417,8 @@ export class HomePage implements OnInit {
       }
       return 0;
     });
+
+    this.gamesSearched = temSearched ? temSearched : [];
   }
 
 
