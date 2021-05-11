@@ -1,6 +1,10 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ModalController, PopoverController, AlertController } from '@ionic/angular';
 
+import { Plugins } from '@capacitor/core';
+
+const { Storage } = Plugins;
+
 import { v4 as uuidv4 } from 'uuid';
 
 import Chess from 'chess.js';
@@ -52,6 +56,8 @@ export class HomePage implements OnInit {
   activeSplash = true;
   phrase: Phrase;
 
+  readyTutorial = false;
+
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
     private modalController: ModalController,
@@ -62,6 +68,15 @@ export class HomePage implements OnInit {
     private phrasesService: PhrasesService
   ) {
     this.phrase = this.phrasesService.getOnePhrase();
+    Storage.get({
+      key: 'ChessColate_tutorial'
+    }).then(data => {
+
+      if (data?.value === 'ready_1') {
+        this.readyTutorial = true;
+      }
+
+    });
   }
 
   ngOnInit(): void {
@@ -289,7 +304,7 @@ export class HomePage implements OnInit {
   }
 
   onClickOnGame(game: Game) {
-    console.log('click game ', game);
+    // console.log('click game ', game);
 
     this.setBoardPosition(game.movesFEN[0]);
     this.currentGame = game;
