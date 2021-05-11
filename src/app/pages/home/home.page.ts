@@ -173,6 +173,11 @@ export class HomePage implements OnInit {
           fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
         }
         this.chessInstance.load(fen);
+        if (this.chessInstance.turn() === 'w') {
+          this.turn = 'white';
+        } else {
+          this.turn = 'black';
+        }
       });
     }
 
@@ -284,6 +289,8 @@ export class HomePage implements OnInit {
   }
 
   onClickOnGame(game: Game) {
+    console.log('click game ', game);
+
     this.setBoardPosition(game.movesFEN[0]);
     this.currentGame = game;
     this.currentGame.currentMoveNumber = 0;
