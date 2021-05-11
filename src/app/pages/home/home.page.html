@@ -42,7 +42,7 @@
         <p> {{ phrase.text }}</p>
       </ion-text>
     </div>
-    <div class="div-phrase-author animate__animated animate__fadeInRight">
+    <div class="div-phrase-author animate__animated animate__fadeIn">
       <ion-text color="text">
         <p> {{ phrase.author }}</p>
       </ion-text>
@@ -77,12 +77,19 @@
         <app-item-game *ngIf="game !== currentGame" [setGame]="game" (clicked)="onClickOnGame($event)"
           (delete)="confirmDeleteGame($event)"></app-item-game>
       </ng-container>
-
-      <app-tutorial *ngIf="!readyTutorial && (allGames?.length === 0 || !allGames)"></app-tutorial>
-
     </ion-list>
+    
+    <app-tutorial *ngIf="!readyTutorial && (allGames?.length === 0 || !allGames)"></app-tutorial>
 
-
+    <div class="ion-padding" *ngIf="gamesSearched.length === 0">
+      <ion-text color="text">
+        <p class="ion-text-center">
+          <small>
+            Aquí se mostrarán las partidas que contengan la posición en el tablero.
+          </small>
+        </p>
+      </ion-text>
+    </div>
 
   </div>
 
