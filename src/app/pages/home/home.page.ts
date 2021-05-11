@@ -149,7 +149,6 @@ export class HomePage implements OnInit {
                   }
                 }
 
-
               } else {
                 this.presentAlertPrompt(objectMove);
               }
@@ -179,7 +178,6 @@ export class HomePage implements OnInit {
 
   }
 
-
   doRefresh() {
     this.currentGame = null;
     this.isFirstMove = true;
@@ -187,6 +185,7 @@ export class HomePage implements OnInit {
     this.setBoardPosition('start');
     this.turn = 'white';
   }
+
 
   // new game
   async presentAlertPrompt(move?: Move, fromPopover?: 'new' | 'current') {
@@ -271,8 +270,15 @@ export class HomePage implements OnInit {
 
 
     this.gamesStorageService.saveGame(newObject);
-    this.currentGame = newObject;
-    this.getGames();
+    if (this.currentGame) {
+      this.currentGame = newObject;
+      this.currentGame.currentMoveNumber = 1;
+      this.isLastMove = true;
+      this.searchGameByFen(this.chessInstance.fen());
+    } else {
+      this.currentGame = newObject;
+      this.getGames();
+    }
     this.messagesService.showToast('Juego creado!');
     this.changeDetectorRef.markForCheck();
   }
@@ -284,7 +290,6 @@ export class HomePage implements OnInit {
     this.isFirstMove = game.movesFEN.length >= 0 ? true : false;
     this.isLastMove = (game.movesFEN.length <= 1) ? true : false;
   }
-
 
 
   // Navigation in game
@@ -344,6 +349,8 @@ export class HomePage implements OnInit {
     this.gamesStorageService.updateGame(this.currentGame);
   }
 
+
+
   // delete
   async confirmDeleteGame(game: Game) {
     const alert = await this.alertController.create({
@@ -373,6 +380,7 @@ export class HomePage implements OnInit {
       this.messagesService.showToast('Juego eliminado...', 'danger');
     });
   }
+
 
   // search
   searchGameByFen(fen: string) {
@@ -420,7 +428,6 @@ export class HomePage implements OnInit {
 
     this.gamesSearched = temSearched ? temSearched : [];
   }
-
 
   openSettings() { }
 
