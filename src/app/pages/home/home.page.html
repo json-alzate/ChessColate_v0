@@ -78,7 +78,7 @@
           (delete)="confirmDeleteGame($event)"></app-item-game>
       </ng-container>
 
-      <app-tutorial></app-tutorial>
+      <app-tutorial *ngIf="!readyTutorial && (allGames?.length === 0 || !allGames)"></app-tutorial>
 
     </ion-list>
 

@@ -71,11 +71,9 @@ export class HomePage implements OnInit {
     Storage.get({
       key: 'ChessColate_tutorial'
     }).then(data => {
-
       if (data?.value === 'ready_1') {
         this.readyTutorial = true;
       }
-
     });
   }
 
@@ -256,6 +254,10 @@ export class HomePage implements OnInit {
     let currentMoveNumber;
     let nameFrom: string;
     const movesHumanHistoryRow: string[] = this.chessInstance.history();
+    if (!this.readyTutorial) {
+      this.readyTutorial = true;
+      this.markTutorialReady();
+    }
 
     if (this.currentGame) {
       // se resta 1 para que no guarde el historial con la jugada del mismo color sino del oponente
@@ -449,6 +451,14 @@ export class HomePage implements OnInit {
     });
 
     this.gamesSearched = temSearched ? temSearched : [];
+  }
+
+  // tutorial
+  markTutorialReady() {
+    Storage.set({
+      key: 'ChessColate_tutorial',
+      value: 'ready_1'
+    });
   }
 
   openSettings() { }
