@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
-import { Plugins } from '@capacitor/core';
+import { Capacitor, Plugins } from '@capacitor/core';
 const { SplashScreen } = Plugins;
+
+import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
+
 
 // variables local storage
 // ChessColate_games
@@ -14,7 +17,11 @@ const { SplashScreen } = Plugins;
 })
 export class AppComponent {
   constructor(
+    private screenOrientation: ScreenOrientation
   ) {
     SplashScreen.hide();
+    if (Capacitor.getPlatform() !== 'web') {
+      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+    }
   }
 }
