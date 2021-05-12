@@ -57,6 +57,7 @@ export class HomePage implements OnInit {
   phrase: Phrase;
 
   readyTutorial = false;
+  readyDidEnter= false;
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -87,6 +88,7 @@ export class HomePage implements OnInit {
 
   ionViewDidEnter() {
     this.loadBoard();
+    this.readyDidEnter = true;
   }
 
   getGames() {
