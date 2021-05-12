@@ -107,8 +107,9 @@ export class HomePage implements OnInit {
   async loadBoard() {
     this.board = await new Chessboard(document.getElementById('board1'), {
       position: 'start',
-      sprite: { url: '/assets/images/chessboard-sprite.svg' },
-      moveInputMode: MOVE_INPUT_MODE.dragPiece
+      sprite: { url: '/assets/images/chessboard-sprite.svg' }
+      // warning deprecated
+      // moveInputMode: MOVE_INPUT_MODE.dragPiece
     });
 
 
