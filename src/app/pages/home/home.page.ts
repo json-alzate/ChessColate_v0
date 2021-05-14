@@ -51,13 +51,11 @@ export class HomePage implements OnInit {
   gamesSearched: Game[] = [];
   allGames: Game[] = [];
 
-  loadingDots: boolean;
-
   activeSplash = true;
   phrase: Phrase;
 
   readyTutorial = false;
-  readyDidEnter= false;
+  readyDidEnter = false;
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -412,10 +410,8 @@ export class HomePage implements OnInit {
   // search
   searchGameByFen(fen: string) {
 
-    this.loadingDots = true;
     if (fen === 'start') {
       this.getGames();
-      this.loadingDots = false;
       return;
     }
     if (this.allGames) {
@@ -437,7 +433,6 @@ export class HomePage implements OnInit {
       });
       this.gamesSearched = gamesResult;
       this.orderGameSearched();
-      this.loadingDots = false;
       this.changeDetectorRef.markForCheck();
     }
   }
