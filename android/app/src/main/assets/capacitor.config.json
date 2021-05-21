@@ -1,6 +1,6 @@
 {
-  "appId": "io.ionic.starter",
-  "appName": "chessColate",
+  "appId": "com.jheison.chesscolate",
+  "appName": "ChessColate",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",

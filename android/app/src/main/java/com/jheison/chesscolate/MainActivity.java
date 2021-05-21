@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.jheison.chesscolate;
 
 import android.os.Bundle;
 
