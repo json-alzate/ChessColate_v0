@@ -57,6 +57,8 @@ export class HomePage implements OnInit {
   readyTutorial = false;
   readyDidEnter = false;
 
+  isSearchingByName = false;
+
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
     private modalController: ModalController,
@@ -449,6 +451,14 @@ export class HomePage implements OnInit {
     });
 
     this.gamesSearched = temSearched ? temSearched : [];
+  }
+
+  onSearchByName(event) {
+
+  }
+
+  onSearchByNameCancel(event) {
+    this.isSearchingByName = false;
   }
 
   // tutorial
