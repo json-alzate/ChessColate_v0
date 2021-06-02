@@ -48,6 +48,8 @@ export class HomePage implements OnInit {
 
   countGames: number;
 
+  whitTextInBoxSearchName: boolean;
+  gamesSearchedByName: Game[] = [];
   gamesSearched: Game[] = [];
   allGames: Game[] = [];
 
@@ -310,7 +312,7 @@ export class HomePage implements OnInit {
 
   onClickOnGame(game: Game) {
     // console.log('click game ', game);
-
+    this.onSearchByNameCancel();
     this.setBoardPosition(game.movesFEN[0]);
     this.currentGame = game;
     this.currentGame.currentMoveNumber = 0;
@@ -454,10 +456,23 @@ export class HomePage implements OnInit {
   }
 
   onSearchByName(event) {
-    console.log(event.detail?.value);
+    const query = event.detail?.value;
+    if (query) {
+      this.gamesSearchedByName = [];
+      this.allGames.forEach(item => {
+        const shouldShow = item.name.toLowerCase().indexOf(query) > -1;
+        if (shouldShow) {
+          this.gamesSearchedByName.push(item);
+        }
+      });
+      this.whitTextInBoxSearchName = true;
+    } else {
+      this.whitTextInBoxSearchName = false;
+    }
   }
 
-  onSearchByNameCancel(event) {
+  onSearchByNameCancel(event?) {
+    this.whitTextInBoxSearchName = false;
     this.isSearchingByName = false;
   }
 
