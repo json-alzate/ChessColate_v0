@@ -454,7 +454,7 @@ export class HomePage implements OnInit {
   }
 
   onSearchByName(event) {
-
+    console.log(event.detail?.value);
   }
 
   onSearchByNameCancel(event) {

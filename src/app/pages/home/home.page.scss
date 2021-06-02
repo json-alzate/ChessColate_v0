@@ -30,6 +30,10 @@ ion-header {
   }
 }
 
-.div-dots {
-  // position: absolute;
+.div-opacity-searching {
+  position: absolute;
+  z-index: 9;
+  height: 57vh;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
 }
