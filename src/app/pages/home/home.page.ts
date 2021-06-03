@@ -48,6 +48,7 @@ export class HomePage implements OnInit {
 
   countGames: number;
 
+  removedAnimationSearchByName = true;
   whitTextInBoxSearchName: boolean;
   gamesSearchedByName: Game[] = [];
   gamesSearched: Game[] = [];
@@ -471,9 +472,27 @@ export class HomePage implements OnInit {
     }
   }
 
+  activeSearchByName() {
+    this.isSearchingByName = true;
+    this.removedAnimationSearchByName = true;
+    const element = document.querySelector('.div-opacity-searching-selector');
+    element.classList.remove('div-opacity-searching', 'animate__animated', 'animate__fadeInDown', 'animate__fadeOutUp');
+    element.classList.add('div-opacity-searching', 'animate__animated', 'animate__fadeInDown');
+  }
+
   onSearchByNameCancel(event?) {
     this.whitTextInBoxSearchName = false;
     this.isSearchingByName = false;
+    this.removedAnimationSearchByName = false;
+    const element = document.querySelector('.div-opacity-searching-selector');
+    element.classList.add('animate__fadeOutUp');
+    element.addEventListener('animationend', () => {
+      // do something
+      if (!this.removedAnimationSearchByName) {
+        element.classList.remove('div-opacity-searching', 'animate__animated', 'animate__fadeInDown', 'animate__fadeOutUp');
+      }
+      this.removedAnimationSearchByName = true;
+    });
   }
 
   // tutorial
