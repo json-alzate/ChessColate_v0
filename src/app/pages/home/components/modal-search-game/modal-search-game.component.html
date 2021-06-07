@@ -1,0 +1,24 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-searchbar placeholder="Buscar por nombre" inputmode="text" type="text"
+      (ionChange)="onSearchByName($event)" [debounce]="250" (ionCancel)="close()" showCancelButton="always"
+      cancelButtonIcon="close-outline" clearIcon="trash-outline"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-list>
+    <ng-container *ngFor="let game of gamesSearchedByName">
+      <app-item-game [showTrash]="false" [setGame]="game" (clicked)="onClickOnGame($event)">
+      </app-item-game>
+    </ng-container>
+  </ion-list>
+
+</ion-content>
+
+<ion-footer>
+  <ion-button (click)="close()" expand="block" fill="clear" shape="round" class="ion-text-capitalize">
+    Cerrar
+  </ion-button>
+</ion-footer>

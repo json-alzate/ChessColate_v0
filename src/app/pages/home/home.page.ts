@@ -22,6 +22,7 @@ import { Game, Move } from '../../models/game.model';
 import { Phrase } from '../../models/phrase.model';
 
 // components
+import { ModalSearchGameComponent } from './components/modal-search-game/modal-search-game.component';
 
 // services
 import { GamesStorageService } from '../../services/games-storage.service';
@@ -48,9 +49,7 @@ export class HomePage implements OnInit {
 
   countGames: number;
 
-  removedAnimationSearchByName = true;
   whitTextInBoxSearchName: boolean;
-  gamesSearchedByName: Game[] = [];
   gamesSearched: Game[] = [];
   allGames: Game[] = [];
 
@@ -60,7 +59,6 @@ export class HomePage implements OnInit {
   readyTutorial = false;
   readyDidEnter = false;
 
-  isSearchingByName = false;
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -313,7 +311,6 @@ export class HomePage implements OnInit {
 
   onClickOnGame(game: Game) {
     // console.log('click game ', game);
-    this.onSearchByNameCancel();
     this.setBoardPosition(game.movesFEN[0]);
     this.currentGame = game;
     this.currentGame.currentMoveNumber = 0;
@@ -456,43 +453,20 @@ export class HomePage implements OnInit {
     this.gamesSearched = temSearched ? temSearched : [];
   }
 
-  onSearchByName(event) {
-    const query = event.detail?.value;
-    if (query) {
-      this.gamesSearchedByName = [];
-      this.allGames.forEach(item => {
-        const shouldShow = item.name.toLowerCase().indexOf(query) > -1;
-        if (shouldShow) {
-          this.gamesSearchedByName.push(item);
-        }
-      });
-      this.whitTextInBoxSearchName = true;
-    } else {
-      this.whitTextInBoxSearchName = false;
-    }
-  }
 
-  activeSearchByName() {
-    this.isSearchingByName = true;
-    this.removedAnimationSearchByName = true;
-    const element = document.querySelector('.div-opacity-searching-selector');
-    element.classList.remove('div-opacity-searching', 'animate__animated', 'animate__fadeInDown', 'animate__fadeOutUp');
-    element.classList.add('div-opacity-searching', 'animate__animated', 'animate__fadeInDown');
-  }
-
-  onSearchByNameCancel(event?) {
-    this.whitTextInBoxSearchName = false;
-    this.isSearchingByName = false;
-    this.removedAnimationSearchByName = false;
-    const element = document.querySelector('.div-opacity-searching-selector');
-    element.classList.add('animate__fadeOutUp');
-    element.addEventListener('animationend', () => {
-      // do something
-      if (!this.removedAnimationSearchByName) {
-        element.classList.remove('div-opacity-searching', 'animate__animated', 'animate__fadeInDown', 'animate__fadeOutUp');
-      }
-      this.removedAnimationSearchByName = true;
+  async activeSearchByName() {
+    const modal = await this.modalController.create({
+      component: ModalSearchGameComponent,
+      componentProps: { allGames: this.allGames }
     });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data?.gameChosen) {
+      this.onClickOnGame(data.gameChosen);
+    }
+
   }
 
   // tutorial

@@ -1,5 +1,6 @@
 <ion-item-sliding>
-  <ion-item-options side="start">
+
+  <ion-item-options side="start" *ngIf="showTrash">
     <ion-item-option color="danger" (click)="deleteGame()">
       <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
     </ion-item-option>

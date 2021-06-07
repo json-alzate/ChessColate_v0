@@ -15,6 +15,7 @@ export class ItemGameComponent implements OnInit {
   set setGame(game: Game) {
     this.setHumanMoves(game);
   }
+  @Input() showTrash = true;
   @Output() clicked = new EventEmitter<Game>();
   @Output() delete = new EventEmitter<Game>();
 
