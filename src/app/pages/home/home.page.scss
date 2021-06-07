@@ -8,9 +8,6 @@ ion-header {
   }
 }
 
-.hidden-board {
-  visibility: hidden;
-}
 .div-phrase {
   p {
     margin-bottom: 0;
@@ -28,12 +25,4 @@ ion-header {
     position: absolute;
     margin-left: 30vw;
   }
-}
-
-.div-opacity-searching {
-  position: absolute;
-  z-index: 9;
-  height: 57vh;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
 }
