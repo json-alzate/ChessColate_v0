@@ -22,6 +22,7 @@ import { Game, Move } from '../../models/game.model';
 import { Phrase } from '../../models/phrase.model';
 
 // components
+import { ModalSearchGameComponent } from './components/modal-search-game/modal-search-game.component';
 
 // services
 import { GamesStorageService } from '../../services/games-storage.service';
@@ -48,6 +49,7 @@ export class HomePage implements OnInit {
 
   countGames: number;
 
+  whitTextInBoxSearchName: boolean;
   gamesSearched: Game[] = [];
   allGames: Game[] = [];
 
@@ -56,6 +58,7 @@ export class HomePage implements OnInit {
 
   readyTutorial = false;
   readyDidEnter = false;
+
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -308,7 +311,6 @@ export class HomePage implements OnInit {
 
   onClickOnGame(game: Game) {
     // console.log('click game ', game);
-
     this.setBoardPosition(game.movesFEN[0]);
     this.currentGame = game;
     this.currentGame.currentMoveNumber = 0;
@@ -449,6 +451,22 @@ export class HomePage implements OnInit {
     });
 
     this.gamesSearched = temSearched ? temSearched : [];
+  }
+
+
+  async activeSearchByName() {
+    const modal = await this.modalController.create({
+      component: ModalSearchGameComponent,
+      componentProps: { allGames: this.allGames }
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data?.gameChosen) {
+      this.onClickOnGame(data.gameChosen);
+    }
+
   }
 
   // tutorial
