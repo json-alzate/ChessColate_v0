@@ -61,7 +61,7 @@
     </div>
     <app-board-actions-buttons [isFirstMove]="isFirstMove" [isLastMove]="isLastMove" [turn]="turn"
       (newGame)="doRefresh()" (moveBack)="moveBack()" (moveInitial)="moveInitial()" (moveNext)="moveNext()"
-      (moveEnd)="moveEnd()">
+      (moveEnd)="moveEnd()" (turnRound)="turnRoundBoard()">
     </app-board-actions-buttons>
 
     <img src="assets/images/separator.png">

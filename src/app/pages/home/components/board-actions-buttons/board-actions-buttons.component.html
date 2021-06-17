@@ -24,10 +24,18 @@
       <ion-icon slot="icon-only" name="play-skip-forward-outline"></ion-icon>
     </ion-button>
 
+
+
   </ion-col>
 
-  <ion-col offset="1" size="1">
-    <div class="div-turn" [ngClass]="{'white-turn': !turn || turn === 'white', 'black-turn': turn && turn === 'black' }">
+  <ion-col size="2">
+
+    <ion-button (click)="emitTurnRound()" size="small" color="dark" fill="clear">
+      <ion-icon slot="icon-only" name="git-compare-outline"></ion-icon>
+    </ion-button>
+
+    <div class="div-turn"
+      [ngClass]="{'white-turn': !turn || turn === 'white', 'black-turn': turn && turn === 'black' }">
     </div>
   </ion-col>
 </ion-row>

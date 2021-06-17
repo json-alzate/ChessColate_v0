@@ -205,7 +205,30 @@ export class HomePage implements OnInit {
     this.isFirstMove = true;
     this.isLastMove = true;
     this.setBoardPosition('start');
+    this.turnRoundBoard('w');
     this.turn = 'white';
+  }
+
+  turnRoundBoard(orientation?: 'w' | 'b') {
+    let orientationToSave = orientation;
+    if (orientation) {
+      this.board.setOrientation(orientation);
+    } else {
+      if (this.board.getOrientation() === 'w') {
+        this.board.setOrientation('b');
+        orientationToSave = 'b';
+      } else {
+        this.board.setOrientation('w')
+        orientationToSave = 'w';
+      }
+    }
+
+    if( this.currentGame ){
+      this.currentGame.orientation = orientationToSave;
+      this.gamesStorageService.updateGame(this.currentGame);
+    }
+
+
   }
 
 
@@ -311,6 +334,9 @@ export class HomePage implements OnInit {
 
   onClickOnGame(game: Game) {
     // console.log('click game ', game);
+    if (game.orientation) {
+      this.turnRoundBoard(game.orientation);
+    }
     this.setBoardPosition(game.movesFEN[0]);
     this.currentGame = game;
     this.currentGame.currentMoveNumber = 0;

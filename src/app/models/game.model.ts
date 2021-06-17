@@ -14,4 +14,5 @@ export interface Game {
     isShowing?: boolean;
     inFavorites?: boolean;
     currentMoveNumber?: number;
+    orientation?: 'w' | 'b';
 }
