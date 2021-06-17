@@ -18,6 +18,7 @@ export class BoardActionsButtonsComponent implements OnInit {
   @Output() moveInitial = new EventEmitter();
   @Output() moveNext = new EventEmitter();
   @Output() moveEnd = new EventEmitter();
+  @Output() turnRound = new EventEmitter();
 
   constructor() { }
 
@@ -41,6 +42,10 @@ export class BoardActionsButtonsComponent implements OnInit {
 
   emitMoveFrontAll() {
     this.moveEnd.emit();
+  }
+
+  emitTurnRound(){
+    this.turnRound.emit();
   }
 
 }
