@@ -28,6 +28,7 @@ import { ModalSearchGameComponent } from './components/modal-search-game/modal-s
 import { GamesStorageService } from '../../services/games-storage.service';
 import { MessagesService } from '../../services/messages.service';
 import { PhrasesService } from '../../services/phrases.service';
+import { AppRateService } from '../../services/app-rate.service';
 
 
 @Component({
@@ -67,7 +68,8 @@ export class HomePage implements OnInit {
     private alertController: AlertController,
     private gamesStorageService: GamesStorageService,
     private messagesService: MessagesService,
-    private phrasesService: PhrasesService
+    private phrasesService: PhrasesService,
+    private appRateService: AppRateService
   ) {
     this.phrase = this.phrasesService.getOnePhrase();
     Storage.get({
@@ -85,6 +87,7 @@ export class HomePage implements OnInit {
       this.changeDetectorRef.markForCheck();
     }, 3000);
     this.getGames();
+    this.appRateService.launchRate();
   }
 
   ionViewDidEnter() {

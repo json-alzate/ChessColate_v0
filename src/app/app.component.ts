@@ -8,6 +8,9 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 // variables local storage
 // ChessColate_games
 // ChessColate_tutorial
+// chesscolate_readyRate
+// chesscolate_lastDateShowRate
+
 
 
 @Component({
