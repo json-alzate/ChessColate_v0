@@ -24,6 +24,7 @@ import { Phrase } from '../../models/phrase.model';
 // components
 import { ModalSearchGameComponent } from './components/modal-search-game/modal-search-game.component';
 
+
 // services
 import { GamesStorageService } from '../../services/games-storage.service';
 import { MessagesService } from '../../services/messages.service';
@@ -87,7 +88,7 @@ export class HomePage implements OnInit {
       this.changeDetectorRef.markForCheck();
     }, 3000);
     this.getGames();
-    this.appRateService.launchRate();
+    // this.appRateService.launchRate();
   }
 
   ionViewDidEnter() {
@@ -507,5 +508,10 @@ export class HomePage implements OnInit {
   }
 
   openSettings() { }
+
+  // Rate app
+  launchRateApp(){
+
+  }
 
 }

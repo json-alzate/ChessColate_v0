@@ -7,6 +7,8 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
+import { SharedModule } from '@shared/shared.module';
+
 // Native
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { AppRate } from '@ionic-native/app-rate/ngx';
@@ -19,7 +21,8 @@ import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
-    AppRoutingModule
+    AppRoutingModule,
+    SharedModule
   ],
   providers: [
     ScreenOrientation,
