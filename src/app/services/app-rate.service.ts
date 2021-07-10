@@ -22,7 +22,8 @@ export class AppRateService {
     Storage.get({
       key: 'chesscolate_readyRate'
     }).then(data => {
-      if (data.value !== 'yes' && data.value !== 'no') {
+
+      if (data?.value !== 'yes' && data?.value !== 'no') {
 
         Storage.get({
           key: 'chesscolate_countDateAppRate'
@@ -30,26 +31,26 @@ export class AppRateService {
           if (dataCount?.value) {
 
             const result = differenceInDays(
-              new Date().getTime(),
-              new Date(Number(dataCount.value))
+              new Date().getTime(), // +++
+              new Date(Number(dataCount.value)) // ---
             );
 
-            if (result > 3) {
+            if (result >= 3) {
               setTimeout(() => {
                 this.launchRate();
               }, 4000);
             }
 
           } else {
-            this.setCountDateAppRate()
+            this.setCountDateAppRate();
           }
 
         });
 
       }
+
     });
   }
-
 
   setCountDateAppRate() {
 
@@ -94,52 +95,7 @@ export class AppRateService {
     }
   }
 
-
-
   rateApp() {
-    // const objt = {
-    //   useLanguage: 'es',
-    //   displayAppName: 'ChessColate',
-    //   promptAgainForEachNewVersion: true,
-    //   usesUntilPrompt: 3,
-    //   storeAppURL: {
-    //     // ios: '< my_app_id >',
-    //     android: 'market://details?id=com.jheison.chesscolate'
-    //   },
-    //   simpleMode: true,
-    //   customLocale: {
-    //     title: 'Te gusta %@?',
-    //     message: 'Si te gusta %@. consideras calificarla?',
-    //     cancelButtonLabel: 'No, gracias',
-    //     laterButtonLabel: 'Recuerdamelo luego',
-    //     rateButtonLabel: 'Calificarla'
-    //   },
-    //   callbacks: {
-    //     onRateDialogShow: function (callback) {
-    //       console.log('User Prompt for Rating');
-    //     },
-    //     onButtonClicked: function (buttonIndex) {
-    //       console.log('Selected Button Index', buttonIndex);
-    //     }
-    //   }
-    // };
-    // this.appRate.setPreferences(objt);
-
-    // this.appRate.preferences.useLanguage = 'es';
-
-    // this.appRate.setPreferences({
-    //   useLanguage: 'es'
-    // });
-    // this.appRate.navigateToAppStore();
-
-
-    // .storeAppURL = {
-    // ios: '<app_id>',
-    // android: 'market://details?id=com.jheison.chesscolate'
-    // windows: 'ms-windows-store://review/?ProductId=<store_id>'
-    // }
-
-    // this.appRate.promptForRating(false);
 
     // tslint:disable-next-line: no-string-literal
     const appRate: any = window['AppRate'];
@@ -149,7 +105,8 @@ export class AppRateService {
       android: 'market://details?id=com.jheison.chesscolate'
     };
     appRate.setPreferences(preferences);
-    appRate.promptForRating(true);
+    appRate.navigateToAppStore();
+    // appRate.promptForRating(false);
 
   }
 
