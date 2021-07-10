@@ -14,7 +14,7 @@ export class ModalRateAppComponent implements OnInit {
 
   ngOnInit() { }
 
-  close() {
-    this.modalController.dismiss();
+  close(option: 'after' | 'yes' | 'no') {
+    this.modalController.dismiss(option);
   }
 }

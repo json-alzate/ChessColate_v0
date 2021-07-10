@@ -36,6 +36,7 @@
     "cordova-plugin-inappbrowser": "^5.0.0",
     "cordova-plugin-nativestorage": "^2.3.2",
     "cordova-plugin-screen-orientation": "^3.0.2",
+    "date-fns": "^2.22.1",
     "es6-promise-plugin": "^4.2.2",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",

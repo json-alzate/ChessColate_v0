@@ -1,17 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
 import { Capacitor, Plugins } from '@capacitor/core';
 const { SplashScreen } = Plugins;
 
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 
-import { ModalRateAppComponent } from '@shared/components/modal-rate-app/modal-rate-app.component';
+import { AppRateService } from '@services/app-rate.service';
 
 // variables local storage
 // ChessColate_games
 // ChessColate_tutorial
+
 // chesscolate_readyRate
-// chesscolate_lastDateShowRate
+// chesscolate_countDateAppRate
+
+// chesscolate_lastDateOpenApp
+// chesscolate_timesOpenApp
 
 
 
@@ -23,7 +26,7 @@ import { ModalRateAppComponent } from '@shared/components/modal-rate-app/modal-r
 export class AppComponent implements OnInit {
   constructor(
     private screenOrientation: ScreenOrientation,
-    private modalController: ModalController
+    private appRateService: AppRateService
   ) {
     SplashScreen.hide();
     if (Capacitor.getPlatform() !== 'web') {
@@ -31,29 +34,9 @@ export class AppComponent implements OnInit {
     }
   }
 
-  ngOnInit(){
-
-
-    setTimeout(() => {
-      this.launchRate();
-    }, 4000);
-
+  ngOnInit() {
+    this.appRateService.validateAppRate();
   }
-
-
-  async launchRate() {
-    const modal = await this.modalController.create({
-    component: ModalRateAppComponent,
-    showBackdrop: true,
-    cssClass: 'modal-rate',
-    backdropDismiss: false
-    });
-  
-    await modal.present();
-  
-  }
-
-
 
 
 }
