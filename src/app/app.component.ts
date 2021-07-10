@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
 
     setTimeout(() => {
       this.launchRate();
-    }, 3000);
+    }, 4000);
 
   }
 
@@ -44,7 +44,9 @@ export class AppComponent implements OnInit {
   async launchRate() {
     const modal = await this.modalController.create({
     component: ModalRateAppComponent,
-    componentProps: { value: 123 }
+    showBackdrop: true,
+    cssClass: 'modal-rate',
+    backdropDismiss: false
     });
   
     await modal.present();

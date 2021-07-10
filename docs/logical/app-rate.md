@@ -4,4 +4,6 @@ El dialogo para calificar la app en la tienda se muestra segun las siguientes co
 - Si el usuario pulso en despues se reinicia los contadores anteriores
 - Si el usuario pulsa en No. no se vuelve a lanzar.
 
-La idea es generar un filtro para las reseñas negativas
+La idea es generar un filtro para las reseñas negativas.
+
+Los botones son del mismo color, para transmitir que cualquier respuesta esta bien

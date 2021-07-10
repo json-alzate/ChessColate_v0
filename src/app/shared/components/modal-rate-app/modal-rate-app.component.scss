@@ -1,3 +1,27 @@
 ion-button {
     text-transform: none;
 }
+
+img {
+    height: 15vh;
+    position: absolute;
+    top: 2vh;
+    left: 1vw;
+}
+
+.div-container-question-one {
+    position: absolute;
+    top: 5vh;
+    left: 25vw;
+    h2 {
+        font-size: 3vh;
+    }
+}
+.div-container-question-two {
+    position: absolute;
+    top: 10vh;
+    left: 22vw;
+    h4 {
+        font-size: 2.4vh;
+    }
+}
