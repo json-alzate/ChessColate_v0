@@ -6,6 +6,9 @@ import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
 
+import { SharedModule } from '@shared/shared.module';
+
+
 import * as fromComponents from './components';
 
 
@@ -14,6 +17,7 @@ import * as fromComponents from './components';
     CommonModule,
     FormsModule,
     IonicModule,
+    SharedModule,
     HomePageRoutingModule
   ],
   declarations: [
