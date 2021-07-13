@@ -1,9 +1,21 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>splash</ion-title>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content>
+
+  <div class="ion-padding div-phrase">
+    <div class="ion-text-center">
+      <img class="img-chessColate" src="assets/images/cookie-3180329_200.png" alt="ChessColate">
+    </div>
+    <div class="ion-margin-top animate__animated animate__fadeIn">
+      <ion-text color="dark">
+        <p> {{ phrase.text }}</p>
+      </ion-text>
+    </div>
+    <div class="div-phrase-author animate__animated animate__fadeIn animate__delay-1s">
+      <ion-text color="text">
+        <p> {{ phrase.author }}</p>
+      </ion-text>
+    </div>
+
+  </div>
 
 </ion-content>

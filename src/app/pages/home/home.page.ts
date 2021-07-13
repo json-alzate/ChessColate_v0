@@ -19,7 +19,6 @@ import {
 
 // models
 import { Game, Move } from '../../models/game.model';
-import { Phrase } from '../../models/phrase.model';
 
 // components
 import { ModalSearchGameComponent } from './components/modal-search-game/modal-search-game.component';
@@ -28,7 +27,6 @@ import { ModalSearchGameComponent } from './components/modal-search-game/modal-s
 // services
 import { GamesStorageService } from '../../services/games-storage.service';
 import { MessagesService } from '../../services/messages.service';
-import { PhrasesService } from '../../services/phrases.service';
 import { AppRateService } from '../../services/app-rate.service';
 
 
@@ -56,7 +54,7 @@ export class HomePage implements OnInit {
   allGames: Game[] = [];
 
   activeSplash = true;
-  phrase: Phrase;
+
 
   readyTutorial = false;
   readyDidEnter = false;
@@ -69,10 +67,8 @@ export class HomePage implements OnInit {
     private alertController: AlertController,
     private gamesStorageService: GamesStorageService,
     private messagesService: MessagesService,
-    private phrasesService: PhrasesService,
-    private appRateService: AppRateService
   ) {
-    this.phrase = this.phrasesService.getOnePhrase();
+
     Storage.get({
       key: 'ChessColate_tutorial'
     }).then(data => {
