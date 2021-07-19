@@ -25,7 +25,7 @@
         <ion-icon slot="icon-only" name="heart"></ion-icon>
       </ion-button>
 
-      <ion-button *ngIf="!activeSplash" (click)="activeSearchByName()" color="dark" [disabled]="allGames?.length < 1">
+      <ion-button  (click)="activeSearchByName()" color="dark" [disabled]="allGames?.length < 1">
         <ion-icon slot="icon-only" name="search-outline"></ion-icon>
       </ion-button>
 
@@ -38,24 +38,8 @@
 
 <ion-content>
 
-  <div class="ion-padding div-phrase" *ngIf="activeSplash">
-    <div class="ion-text-center">
-      <img class="img-chessColate" src="assets/images/cookie-3180329_200.png" alt="ChessColate">
-    </div>
-    <div class="ion-margin-top animate__animated animate__fadeIn">
-      <ion-text color="dark">
-        <p> {{ phrase.text }}</p>
-      </ion-text>
-    </div>
-    <div class="div-phrase-author animate__animated animate__fadeIn animate__delay-1s">
-      <ion-text color="text">
-        <p> {{ phrase.author }}</p>
-      </ion-text>
-    </div>
 
-  </div>
 
-  <div class="animate__animated animate__fadeIn animate__delay-3s">
 
     <div class="board" id="board1">
     </div>
@@ -87,7 +71,6 @@
     </div>
 
 
-  </div>
 
   <!-- <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button>
@@ -97,9 +80,3 @@
 
 
 </ion-content>
-
-<!-- <ion-footer>
-  <ion-toolbar>
-    <ion-title>Footer</ion-title>
-  </ion-toolbar>
-</ion-footer> -->
