@@ -53,7 +53,6 @@ export class HomePage implements OnInit {
   gamesSearched: Game[] = [];
   allGames: Game[] = [];
 
-  activeSplash = true;
 
 
   readyTutorial = false;
@@ -79,17 +78,16 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.activeSplash = false;
-      this.changeDetectorRef.markForCheck();
-    }, 3000);
+
     this.getGames();
     // this.appRateService.launchRate();
   }
 
   ionViewDidEnter() {
-    this.loadBoard();
-    this.readyDidEnter = true;
+    if(!this.readyDidEnter){
+      this.loadBoard();
+      this.readyDidEnter = true;
+    }
   }
 
   getGames() {
