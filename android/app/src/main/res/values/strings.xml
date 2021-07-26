@@ -4,4 +4,5 @@
     <string name="title_activity_main">ChessColate</string>
     <string name="package_name">com.jheison.chesscolate</string>
     <string name="custom_url_scheme">com.jheison.chesscolate</string>
+    <string name="server_client_id">798600509062-1hrnp7meoueqo1v0lipqdnrqpjln44nv.apps.googleusercontent.com</string>
 </resources>

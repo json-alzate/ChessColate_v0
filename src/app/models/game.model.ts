@@ -15,4 +15,5 @@ export interface Game {
     inFavorites?: boolean;
     currentMoveNumber?: number;
     orientation?: 'w' | 'b';
+    syncFirestore?: boolean;
 }
