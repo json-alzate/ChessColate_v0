@@ -2,12 +2,12 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
-import '@codetrix-studio/capacitor-google-auth';
+
 import  firebase  from 'firebase/app';
 
 import { Platform } from '@ionic/angular';
 
-import { Plugins } from '@capacitor/core';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 // rxjs
 import { from, Observable } from 'rxjs';
@@ -58,7 +58,8 @@ export class AuthService {
 
 
   async capacitorLoginGoogle() {
-    const answer = await Plugins.GoogleAuth.signIn();
+    await GoogleAuth.init()
+    const answer = await GoogleAuth.signIn();
     const credential = firebase.auth.GoogleAuthProvider.credential(answer.authentication.idToken);
     return this.angularFireAuth.signInWithCredential(credential);
   }

@@ -1,9 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ModalController, PopoverController, AlertController } from '@ionic/angular';
 
-import { Plugins } from '@capacitor/core';
+import { Storage } from '@capacitor/storage';
 
-const { Storage } = Plugins;
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -106,7 +105,7 @@ export class HomePage implements OnInit {
   async loadBoard() {
     this.board = await new Chessboard(document.getElementById('board1'), {
       position: 'start',
-      sprite: { url: '/assets/images/chessboard-sprite.svg' }
+      // sprite: { url: '/assets/images/chessboard-sprite.svg' }
     });
 
 
