@@ -1,5 +1,5 @@
 // core and third party libraries
-import { Injectable } from '@angular/core';
+import { ComponentFactoryResolver, Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
 
@@ -58,7 +58,6 @@ export class AuthService {
 
 
   async capacitorLoginGoogle() {
-    await GoogleAuth.init()
     const answer = await GoogleAuth.signIn();
     const credential = firebase.auth.GoogleAuthProvider.credential(answer.authentication.idToken);
     return this.angularFireAuth.signInWithCredential(credential);
