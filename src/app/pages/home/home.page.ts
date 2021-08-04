@@ -53,7 +53,6 @@ export class HomePage implements OnInit {
   allGames: Game[] = [];
 
 
-
   readyTutorial = false;
   readyDidEnter = false;
 

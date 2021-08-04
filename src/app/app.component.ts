@@ -20,6 +20,7 @@ import  firebase  from 'firebase/app';
 // services
 import { AppRateService } from '@services/app-rate.service';
 import { AuthService } from '@services/auth.service';
+import { GamesFirestoreService } from '@services/games-firestore.service';
 
 // components
 
@@ -49,7 +50,8 @@ export class AppComponent implements OnInit {
     private readonly angularFirestore: AngularFirestore,
     private screenOrientation: ScreenOrientation,
     private appRateService: AppRateService,
-    private authService: AuthService
+    private authService: AuthService,
+    private gamesFirestoreService: GamesFirestoreService
   ) {
     SplashScreen.hide();
     if (Capacitor.getPlatform() !== 'web') {
@@ -69,6 +71,7 @@ export class AppComponent implements OnInit {
         // const usersRef = this.angularFirestore.firestore.collection('Users').doc(fbUser.uid);
         // usersRef.get().then((doc) => {
         // });
+        this.gamesFirestoreService.readLocalGames(fbUser.uid);
       } else {
         console.log('sin usuario logueado')
       }
