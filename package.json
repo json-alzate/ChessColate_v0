@@ -30,7 +30,7 @@
     "@ionic-native/core": "^5.33.0",
     "@ionic-native/in-app-browser": "^5.34.0",
     "@ionic-native/screen-orientation": "^5.33.0",
-    "@ionic/angular": "^5.5.2",
+    "@ionic/angular": "^5.6.12",
     "@ionic/storage": "^3.0.4",
     "@ngrx/component-store": "^12.3.0",
     "@ngrx/effects": "^12.3.0",
