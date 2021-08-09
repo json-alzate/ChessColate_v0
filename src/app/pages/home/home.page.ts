@@ -1,13 +1,9 @@
+// core and third party libraries
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ModalController, PopoverController, AlertController } from '@ionic/angular';
-
 import { Storage } from '@capacitor/storage';
-
-
 import { v4 as uuidv4 } from 'uuid';
-
 import Chess from 'chess.js';
-
 import {
   COLOR,
   INPUT_EVENT_TYPE,
@@ -15,18 +11,24 @@ import {
   Chessboard
 } from 'cm-chessboard/src/cm-chessboard/Chessboard.js';
 
+// rxjs
+
+// states
+
+// actions
+
+// selectors
 
 // models
-import { Game, Move } from '../../models/game.model';
+import { Game, Move } from '@models/game.model';
+
+// services
+import { GamesStorageService } from '@services/games-storage.service';
+import { MessagesService } from '@services/messages.service';
 
 // components
 import { ModalSearchGameComponent } from './components/modal-search-game/modal-search-game.component';
 
-
-// services
-import { GamesStorageService } from '../../services/games-storage.service';
-import { MessagesService } from '../../services/messages.service';
-import { AppRateService } from '../../services/app-rate.service';
 
 
 @Component({
