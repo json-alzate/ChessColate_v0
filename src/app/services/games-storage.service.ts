@@ -3,15 +3,13 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@capacitor/storage';
 
 // rxjs
-import { Observable } from 'rxjs';
+import { Observable, Subscriber } from 'rxjs';
 
 // states
-import { AppState } from '@redux/states/app.state'
 
 // actions
 
 // selectors
-import { getProfile } from '@redux/selectors/profile.selector';
 
 // models
 import { Game } from '@models/game.model';
@@ -19,9 +17,6 @@ import { Game } from '@models/game.model';
 // services
 
 // components
-
-
-
 
 
 
@@ -33,8 +28,16 @@ import { Game } from '@models/game.model';
 })
 export class GamesStorageService {
 
+  observerNeedReadGames: Subscriber<boolean>;
+  public readAllGames: Observable<boolean> = new Observable((observer) => {
+    // observable execution
+    this.observerNeedReadGames = observer;
+  });
 
-  constructor() { }
+
+
+  constructor(
+  ) { }
 
 
   getGames() {
@@ -45,7 +48,7 @@ export class GamesStorageService {
 
   }
 
-  updateGame(game: Game) {
+  updateGame(game: Game, isFromFirestore?: boolean) {
 
     // ¿por que lo eliminaba?  8/05/2021
     // delete game.currentMoveNumber;
@@ -59,6 +62,10 @@ export class GamesStorageService {
       Storage.set({
         key: 'ChessColate_games',
         value: JSON.stringify(games)
+      }).then(() => {
+        if (isFromFirestore) {
+          this.observerNeedReadGames.next(true);
+        }
       });
     });
   }

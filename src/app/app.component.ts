@@ -71,10 +71,8 @@ export class AppComponent implements OnInit {
   listenerAuth() {
     this.authService.getAuthState().subscribe((fbUser: firebase.User) => {
       if (fbUser) {
-        console.log('listo el usuario ', fbUser);
         const usersRef = this.angularFirestore.firestore.collection('Users').doc(fbUser.uid);
         usersRef.get().then((doc) => {
-          console.log('el doc ', doc);
           if (doc.exists) {
             const profile: Profile = { ...doc.data() as Profile, uid: doc.id };
             this.setProfile(profile);

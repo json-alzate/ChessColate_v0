@@ -1,8 +1,24 @@
+// core and third party libraries
 import { Component, OnInit } from '@angular/core';
-
 import { environment } from '@environments/environment';
 
+// rxjs
+
+// states
+
+// actions
+
+// selectors
+
+// models
+
+// services
 import { AuthService } from '@services/auth.service';
+
+// components
+
+
+
 
 @Component({
   selector: 'app-settings',

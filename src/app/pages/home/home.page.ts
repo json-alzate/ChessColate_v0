@@ -2,6 +2,8 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ModalController, PopoverController, AlertController } from '@ionic/angular';
 import { Storage } from '@capacitor/storage';
+import { Store, select } from '@ngrx/store';
+
 import { v4 as uuidv4 } from 'uuid';
 import Chess from 'chess.js';
 import {
@@ -12,18 +14,27 @@ import {
 } from 'cm-chessboard/src/cm-chessboard/Chessboard.js';
 
 // rxjs
+import { Observable } from 'rxjs';
+
 
 // states
+import { AppState } from '@redux/states/app.state'
+
 
 // actions
 
 // selectors
+import { getProfile } from '@redux/selectors/profile.selector';
+
 
 // models
 import { Game, Move } from '@models/game.model';
+import { Profile } from '@models/profile.model';
+
 
 // services
 import { GamesStorageService } from '@services/games-storage.service';
+import { GamesFirestoreService } from '@services/games-firestore.service';
 import { MessagesService } from '@services/messages.service';
 
 // components
@@ -58,6 +69,8 @@ export class HomePage implements OnInit {
   readyTutorial = false;
   readyDidEnter = false;
 
+  profile: Profile;
+
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -66,6 +79,8 @@ export class HomePage implements OnInit {
     private alertController: AlertController,
     private gamesStorageService: GamesStorageService,
     private messagesService: MessagesService,
+    private gamesFirestoreService: GamesFirestoreService,
+    private store: Store<AppState>
   ) {
 
     Storage.get({
@@ -75,20 +90,36 @@ export class HomePage implements OnInit {
         this.readyTutorial = true;
       }
     });
+
+    this.listenNeedReadAllGames();
   }
+
 
   ngOnInit(): void {
-
     this.getGames();
-    // this.appRateService.launchRate();
+    this.listenProfile();
   }
 
+
   ionViewDidEnter() {
-    if(!this.readyDidEnter){
+    if (!this.readyDidEnter) {
       this.loadBoard();
       this.readyDidEnter = true;
     }
   }
+
+
+  listenNeedReadAllGames() {
+    this.gamesStorageService.readAllGames.subscribe(() => this.getGames());
+  }
+
+
+  listenProfile() {
+    this.store.pipe(
+      select(getProfile)
+    ).subscribe(profile => this.profile = profile);
+  }
+
 
   getGames() {
 
@@ -129,7 +160,7 @@ export class HomePage implements OnInit {
             } else {
               this.turn = 'black';
             }
-
+            
             this.board.setPosition(this.chessInstance.fen()).then(() => {
               this.isLastMove = false;
               this.isFirstMove = false;
@@ -137,17 +168,18 @@ export class HomePage implements OnInit {
                 const currentMoveNumber = this.currentGame.currentMoveNumber;
                 const onStepForward = currentMoveNumber ? currentMoveNumber + 1 : 1;
                 this.currentGame.currentMoveNumber = onStepForward; // revisar que sucede en la navegación si lo suma de mas?
-
+                
                 if (onStepForward === this.currentGame.movesFEN.length) { // es la ultima jugada
-
+                  
                   // se guarda el movimiento en la partida
                   const chessHistory = this.chessInstance.history();
                   this.currentGame.moves = [...this.currentGame.moves, objectMove];
                   // this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.board.getPosition()];
                   this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.chessInstance.fen()];
                   this.currentGame.movesHumanHistoryRow = [...this.currentGame.movesHumanHistoryRow, chessHistory[chessHistory.length - 1]];
-
+                  
                   this.gamesStorageService.updateGame(this.currentGame);
+                  this.updateGameOnFirestore();
                   this.searchGameByFen(this.chessInstance.fen());
 
                 } else {
@@ -219,9 +251,10 @@ export class HomePage implements OnInit {
       }
     }
 
-    if( this.currentGame ){
+    if (this.currentGame) {
       this.currentGame.orientation = orientationToSave;
       this.gamesStorageService.updateGame(this.currentGame);
+      this.updateGameOnFirestore();
     }
 
 
@@ -302,10 +335,16 @@ export class HomePage implements OnInit {
       movesFEN = [this.currentGame.movesFEN[currentMoveNumber], this.chessInstance.fen()];
     }
 
+    let uidUser;
+    if (this.profile) {
+      uidUser = this.profile.uid;
+    }
+
     const newObject: Game = {
       id: uuidv4(),
       name,
       nameFrom,
+      uidUser,
       movesFEN,
       movesHumanHistoryRow,
       moves,
@@ -315,13 +354,13 @@ export class HomePage implements OnInit {
 
 
     this.gamesStorageService.saveGame(newObject);
+
+    this.currentGame = newObject;
     if (this.currentGame) {
-      this.currentGame = newObject;
       this.currentGame.currentMoveNumber = 1;
       this.isLastMove = true;
       this.searchGameByFen(this.chessInstance.fen());
     } else {
-      this.currentGame = newObject;
       this.getGames();
     }
     this.messagesService.showToast('Juego creado!');
@@ -329,7 +368,6 @@ export class HomePage implements OnInit {
   }
 
   onClickOnGame(game: Game) {
-    // console.log('click game ', game);
     if (game.orientation) {
       this.turnRoundBoard(game.orientation);
     }
@@ -391,11 +429,13 @@ export class HomePage implements OnInit {
   addToFavorites() {
     this.currentGame.inFavorites = true;
     this.gamesStorageService.updateGame(this.currentGame);
+    this.updateGameOnFirestore();
   }
 
   removeFromFavorites() {
     this.currentGame.inFavorites = false;
     this.gamesStorageService.updateGame(this.currentGame);
+    this.updateGameOnFirestore();
   }
 
 
@@ -501,8 +541,16 @@ export class HomePage implements OnInit {
 
   openSettings() { }
 
-  // Rate app
-  launchRateApp(){
+
+  // update game on firestore
+  updateGameOnFirestore() {
+    if (this.profile && this.currentGame.syncFirestore) {
+      const gameToFirestore: Game = {
+        ...this.currentGame,
+        uidUser: this.profile.uid
+      };
+      this.gamesFirestoreService.updateGame(gameToFirestore).toPromise().then(() => {});
+    }
 
   }
 
