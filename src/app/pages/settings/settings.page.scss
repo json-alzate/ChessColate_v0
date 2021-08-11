@@ -2,3 +2,14 @@ ion-card {
     margin-top: 6vh;
     margin-bottom: 3vh;
 }
+
+.img-avatar {
+    display: block;
+    margin: 0 auto;
+    border-radius: 50%;
+}
+
+.btn-logout {
+    position: absolute;
+    right: 1.5vw;
+}

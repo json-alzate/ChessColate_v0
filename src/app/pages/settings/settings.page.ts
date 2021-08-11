@@ -1,19 +1,25 @@
 // core and third party libraries
 import { Component, OnInit } from '@angular/core';
 import { environment } from '@environments/environment';
+import { Store, select } from '@ngrx/store';
 
 // rxjs
 
 // states
+import { AppState } from '@redux/states/app.state'
 
 // actions
+import { logOut } from '@redux/actions/profile.actions';
 
 // selectors
+import { getProfile } from '@redux/selectors/profile.selector';
 
 // models
+import { Profile } from '@models/profile.model';
 
 // services
 import { AuthService } from '@services/auth.service';
+import { AppRateService } from '@services/app-rate.service';
 
 // components
 
@@ -28,16 +34,43 @@ import { AuthService } from '@services/auth.service';
 export class SettingsPage implements OnInit {
 
   version = environment.versionName;
+  profile: Profile;
+
+  figures = true;
 
   constructor(
-    private authService: AuthService
-  ) { }
+    private store: Store<AppState>,
+    private authService: AuthService,
+    private appRateService: AppRateService
+  ) {
+    this.listenProfile();
+  }
 
   ngOnInit() {
   }
 
+  listenProfile() {
+    this.store.pipe(
+      select(getProfile)
+    ).subscribe(profile => {
+      if(profile){
+        this.profile = profile;
+        this.figures = profile?.settings?.figures;
+      }
+    });
+  }
+
   loginGoogle() {
     this.authService.loginGoogle();
+  }
+
+  rateApp() {
+    this.appRateService.rateApp();
+  }
+
+  onLogout(){
+    const action = logOut();
+    this.store.dispatch(action);
   }
 
 }
