@@ -28,9 +28,6 @@ import { GamesFirestoreService } from '@services/games-firestore.service';
 // components
 
 
-
-
-
 // variables local storage
 // ChessColate_games
 // ChessColate_tutorial

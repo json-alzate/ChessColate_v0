@@ -160,7 +160,7 @@ export class HomePage implements OnInit {
             } else {
               this.turn = 'black';
             }
-            
+
             this.board.setPosition(this.chessInstance.fen()).then(() => {
               this.isLastMove = false;
               this.isFirstMove = false;
@@ -168,16 +168,16 @@ export class HomePage implements OnInit {
                 const currentMoveNumber = this.currentGame.currentMoveNumber;
                 const onStepForward = currentMoveNumber ? currentMoveNumber + 1 : 1;
                 this.currentGame.currentMoveNumber = onStepForward; // revisar que sucede en la navegación si lo suma de mas?
-                
+
                 if (onStepForward === this.currentGame.movesFEN.length) { // es la ultima jugada
-                  
+
                   // se guarda el movimiento en la partida
                   const chessHistory = this.chessInstance.history();
                   this.currentGame.moves = [...this.currentGame.moves, objectMove];
                   // this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.board.getPosition()];
                   this.currentGame.movesFEN = [...this.currentGame.movesFEN, this.chessInstance.fen()];
                   this.currentGame.movesHumanHistoryRow = [...this.currentGame.movesHumanHistoryRow, chessHistory[chessHistory.length - 1]];
-                  
+
                   this.gamesStorageService.updateGame(this.currentGame);
                   this.updateGameOnFirestore();
                   this.searchGameByFen(this.chessInstance.fen());
@@ -467,6 +467,9 @@ export class HomePage implements OnInit {
     this.gamesStorageService.deleteGame(game).then(() => {
       this.getGames();
       this.messagesService.showToast('Juego eliminado...', 'danger');
+      if (game.syncFirestore) {
+        this.gamesFirestoreService.deleteGame(game.id);
+      }
     });
   }
 
@@ -549,7 +552,7 @@ export class HomePage implements OnInit {
         ...this.currentGame,
         uidUser: this.profile.uid
       };
-      this.gamesFirestoreService.updateGame(gameToFirestore).toPromise().then(() => {});
+      this.gamesFirestoreService.updateGame(gameToFirestore).toPromise().then(() => { });
     }
 
   }

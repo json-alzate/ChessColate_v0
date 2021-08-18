@@ -23,7 +23,7 @@ export class GamesFirestoreService {
     this.gamesStorageService.getGames().then(data => {
       const allGames: Game[] = JSON.parse(data.value) as Game[];
 
-      allGames.forEach(game => {
+      allGames?.forEach(game => {
 
         if (!game.syncFirestore) {
           const gameToUpdate: Game = { ...game, syncFirestore: true, uidUser };
@@ -52,5 +52,12 @@ export class GamesFirestoreService {
     });
     return from<Promise<Game>>(toReturn as unknown as Promise<Game>);
   }
+
+
+  deleteGame(uidGame: string) {
+    const toReturn = this.angularFirestore.doc(`games-cheat/${uidGame}`).delete();
+    return from<Promise<Game>>(toReturn as unknown as Promise<Game>);
+  }
+
 
 }
