@@ -31,7 +31,7 @@
     <ng-template #elseTemplateProfile>
 
       <ion-card-content>
-        
+
         <ion-button fill="clear" class="btn-logout" (click)="onLogout()">
           <ion-icon color="danger" slot="icon-only" name="power-outline"></ion-icon>
         </ion-button>
@@ -52,10 +52,10 @@
 
     <ion-item>
       <ion-label>Figuras</ion-label>
-      <ion-toggle  [(ngModel)]="figures" slot="end"></ion-toggle>
+      <ion-toggle (ionChange)="onChangeFigures()" [(ngModel)]="figures" slot="end"></ion-toggle>
     </ion-item>
 
-    <ion-item (click)="rateApp()" >
+    <ion-item (click)="rateApp()">
       <ion-label>Calificanos</ion-label>
       <ion-icon slot="end" name="star-outline"></ion-icon>
     </ion-item>

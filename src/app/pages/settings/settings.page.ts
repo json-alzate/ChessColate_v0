@@ -1,5 +1,5 @@
 // core and third party libraries
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { environment } from '@environments/environment';
 import { Store, select } from '@ngrx/store';
 
@@ -15,7 +15,7 @@ import { logOut } from '@redux/actions/profile.actions';
 import { getProfile } from '@redux/selectors/profile.selector';
 
 // models
-import { Profile } from '@models/profile.model';
+import { Profile, Settings } from '@models/profile.model';
 
 // services
 import { AuthService } from '@services/auth.service';
@@ -43,17 +43,18 @@ export class SettingsPage implements OnInit {
     private authService: AuthService,
     private appRateService: AppRateService
   ) {
-    this.listenProfile();
   }
 
   ngOnInit() {
+    this.listenProfile();
   }
+
 
   listenProfile() {
     this.store.pipe(
       select(getProfile)
     ).subscribe(profile => {
-      if(profile){
+      if (profile) {
         this.profile = profile;
         this.figures = profile?.settings?.figures;
       }
@@ -64,11 +65,17 @@ export class SettingsPage implements OnInit {
     this.authService.loginGoogle();
   }
 
+  onChangeFigures() {
+    const settings = { ...this.profile?.settings, figures: this.figures };
+    const profileToUpdate: Profile = { ...this.profile, settings };
+    this.authService.updateProfile(profileToUpdate);
+  }
+
   rateApp() {
     this.appRateService.rateApp();
   }
 
-  onLogout(){
+  onLogout() {
     const action = logOut();
     this.store.dispatch(action);
   }
