@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
-import { Game } from '../../../../models/game.model';
+import { Game } from '@models/game.model';
 
 @Component({
   selector: 'app-item-game',
@@ -37,17 +37,30 @@ export class ItemGameComponent implements OnInit {
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < moves.length; i = i + 2) {
 
-      const reyB = '<span class="figure">&#x2654;</span>';
-      const damaB = '<span class="figure">&#x2655;</span>';
-      const torreB = '<span class="figure-t">&#x2656;</span>';
-      const alfilB = '<span class="figure">&#x2657;</span>';
-      const caballoB = '<span class="figure">&#x2658;</span>';
+      const reyB = String('<span class="figure"><img  src="assets-images-pieces-wK.svg"></span>').replace(/-/g, "\\");
+      const damaB = String('<span class="figure"><img  src="assets-images-pieces-wQ.svg"></span>').replace(/-/g, "\\");
+      const torreB = String('<span class="figure"><img  src="assets-images-pieces-wR.svg"></span>').replace(/-/g, "\\");
+      const alfilB = String('<span class="figure"><img  src="assets-images-pieces-wB.svg"></span>').replace(/-/g, "\\");
+      const caballoB = String('<span class="figure"><img  src="assets-images-pieces-wN.svg"></span>').replace(/-/g, "\\");
 
-      const reyN = '<span class="figure">&#x265A;</span>';
-      const damaN = '<span class="figure">&#x265B;</span>';
-      const torreN = '<span class="figure-t">&#x265C;</span>';
-      const alfilN = '<span class="figure">&#x265D;</span>';
-      const caballoN = '<span class="figure">&#x265E;</span>';
+
+      const reyN = String('<span class="figure"><img  src="assets-images-pieces-bK.svg"></span>').replace(/-/g, "\\");
+      const damaN = String('<span class="figure"><img  src="assets-images-pieces-bQ.svg"></span>').replace(/-/g, "\\");
+      const torreN = String('<span class="figure"><img  src="assets-images-pieces-bR.svg"></span>').replace(/-/g, "\\");
+      const alfilN = String('<span class="figure"><img  src="assets-images-pieces-bB.svg"></span>').replace(/-/g, "\\");
+      const caballoN = String('<span class="figure"><img  src="assets-images-pieces-bN.svg"></span>').replace(/-/g, "\\");
+
+      // const reyB = '<span class="figure">&#x2654;</span>';
+      // const damaB = '<span class="figure">&#x2655;</span>';
+      // const torreB = '<span class="figure-t">&#x2656;</span>';
+      // const alfilB = '<span class="figure">&#x2657;</span>';
+      // const caballoB = '<span class="figure">&#x2658;</span>';
+
+      // const reyN = '<span class="figure">&#x265A;</span>';
+      // const damaN = '<span class="figure">&#x265B;</span>';
+      // const torreN = '<span class="figure-t">&#x265C;</span>';
+      // const alfilN = '<span class="figure">&#x265D;</span>';
+      // const caballoN = '<span class="figure">&#x265E;</span>';
 
       const moveW = moves[i].replace('N', caballoB).replace('B', alfilB).replace('R', torreB).replace('Q', damaB).replace('K', reyB);
       const moveB = moves[i + 1] ? ' ' + moves[i + 1].replace('N', caballoN).replace('B', alfilN).replace('R', torreN)
