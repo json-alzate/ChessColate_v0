@@ -70,6 +70,7 @@ export class HomePage implements OnInit {
   readyDidEnter = false;
 
   profile: Profile;
+  profile$: Observable<Profile>;
 
 
   constructor(
@@ -115,9 +116,10 @@ export class HomePage implements OnInit {
 
 
   listenProfile() {
-    this.store.pipe(
+    this.profile$ =  this.store.pipe(
       select(getProfile)
-    ).subscribe(profile => this.profile = profile);
+    );
+    this.profile$.subscribe(profile => this.profile = profile);
   }
 
 

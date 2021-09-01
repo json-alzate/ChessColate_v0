@@ -9,7 +9,7 @@ import { Store, select } from '@ngrx/store';
 import { AppState } from '@redux/states/app.state'
 
 // actions
-import { logOut } from '@redux/actions/profile.actions';
+import { logOut, setProfile } from '@redux/actions/profile.actions';
 
 // selectors
 import { getProfile } from '@redux/selectors/profile.selector';
@@ -69,10 +69,16 @@ export class SettingsPage implements OnInit {
     const settings = { ...this.profile?.settings, figures: this.figures };
     const profileToUpdate: Profile = { ...this.profile, settings };
     this.authService.updateProfile(profileToUpdate);
+    this.updateProfile(profileToUpdate)
   }
 
   rateApp() {
     this.appRateService.rateApp();
+  }
+
+  updateProfile(profile: Profile) {
+    const action = setProfile({ profile });
+    this.store.dispatch(action);
   }
 
   onLogout() {

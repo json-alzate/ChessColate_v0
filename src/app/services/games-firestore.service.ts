@@ -38,6 +38,32 @@ export class GamesFirestoreService {
   }
 
 
+  getRemoteGames(uidUser: string): Observable<Game[]> {
+    let gameToAdd: Game;
+    const objectGames: Game[] = [];
+
+    const promise = new Promise((resolve, reject) => {
+
+      this.angularFirestore.collection<Game>('games-cheat', ref => {
+        return ref.where('uidUser', '==', uidUser);
+      }).get().subscribe(result => {
+        const docs = result.docs;
+        docs.forEach(doc => {
+          gameToAdd = doc.data() as Game;
+          gameToAdd.id = doc.id;
+          objectGames.push(gameToAdd);
+        });
+
+        resolve(objectGames);
+
+      });
+
+    });
+
+    return from<Promise<Game[]>>(promise as unknown as Promise<Game[]>);
+  }
+
+
   saveGameInFirestore(game: Game): Observable<Game> {
     const toReturn = this.angularFirestore.collection<Game>('games-cheat').doc(game.id).set({
       ...game
