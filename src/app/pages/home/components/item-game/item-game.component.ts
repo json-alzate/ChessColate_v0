@@ -52,8 +52,6 @@ export class ItemGameComponent implements OnInit {
     ).subscribe(profile => {
       this.profile = profile;
       if (this.game) {
-        console.log('otra vez');
-
         this.setHumanMoves(this.game);
       }
     });
@@ -85,7 +83,6 @@ export class ItemGameComponent implements OnInit {
       let torreN;
       let alfilN;
       let caballoN;
-      console.log(this.profile?.settings?.figures, this.profile);
 
       if (this.profile?.settings?.figures || !this.profile) {
 

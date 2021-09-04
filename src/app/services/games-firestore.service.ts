@@ -18,6 +18,39 @@ export class GamesFirestoreService {
     private gamesStorageService: GamesStorageService
   ) { }
 
+  syncGames(uidUser: string) {
+
+    this.getRemoteGames(uidUser).subscribe(remoteGames => {
+      this.gamesStorageService.getGames().then(data => {
+        const localGames: Game[] = JSON.parse(data.value) as Game[];
+        this.applySyncGames(remoteGames, localGames);
+      });
+    });
+
+  }
+
+  applySyncGames(remoteGames: Game[], localGames: Game[]) {
+
+    // graba de juego en juego cada vez que se carga el perfil aunque muestre los 5 que estan firestore
+    remoteGames?.forEach( async game => {
+      console.log('el juego remoto ', game);
+      if(!localGames?.find(g => g.id === game.id)) {
+        console.log('a grabar');
+        await this.gamesStorageService.saveGame(game);
+      }
+    });
+
+
+    localGames?.forEach(async game => {
+      if(!remoteGames.find(g => g.id === game.id)) {
+        await this.saveGameInFirestore(game).toPromise().then(() => {});
+      }
+    });
+
+    console.log('sync complete!!!');
+    
+
+  }
 
   readLocalGames(uidUser: string) {
     this.gamesStorageService.getGames().then(data => {

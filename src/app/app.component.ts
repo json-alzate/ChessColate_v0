@@ -74,11 +74,11 @@ export class AppComponent implements OnInit {
             const profile: Profile = { ...doc.data() as Profile, uid: doc.id };
             this.setProfile(profile);
           } else {
-
             this.registerUserOnFirestore(fbUser);
           }
         });
         this.gamesFirestoreService.readLocalGames(fbUser.uid);
+
       } else {
         console.log('sin usuario logueado')
       }

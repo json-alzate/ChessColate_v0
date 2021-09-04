@@ -65,6 +65,8 @@ export class HomePage implements OnInit {
   gamesSearched: Game[] = [];
   allGames: Game[] = [];
 
+  remoteGames: Game[] = [];
+
 
   readyTutorial = false;
   readyDidEnter = false;
@@ -116,10 +118,15 @@ export class HomePage implements OnInit {
 
 
   listenProfile() {
-    this.profile$ =  this.store.pipe(
+    this.profile$ = this.store.pipe(
       select(getProfile)
     );
-    this.profile$.subscribe(profile => this.profile = profile);
+    this.profile$.subscribe(profile => {
+      this.profile = profile;
+      if(this.profile){
+        this.gamesFirestoreService.syncGames(this.profile.uid);
+      }
+    });
   }
 
 
@@ -134,6 +141,7 @@ export class HomePage implements OnInit {
     });
 
   }
+
 
 
   async loadBoard() {
