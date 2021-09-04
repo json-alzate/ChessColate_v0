@@ -362,7 +362,6 @@ export class HomePage implements OnInit {
       inFavorites: false
     };
 
-
     this.gamesStorageService.saveGame(newObject);
 
     this.currentGame = newObject;

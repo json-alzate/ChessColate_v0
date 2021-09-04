@@ -31,24 +31,24 @@ export class GamesFirestoreService {
 
   applySyncGames(remoteGames: Game[], localGames: Game[]) {
 
-    // graba de juego en juego cada vez que se carga el perfil aunque muestre los 5 que estan firestore
-    remoteGames?.forEach( async game => {
-      console.log('el juego remoto ', game);
-      if(!localGames?.find(g => g.id === game.id)) {
-        console.log('a grabar');
-        await this.gamesStorageService.saveGame(game);
+    let gameToStorage: Game[] = [];
+    remoteGames?.forEach(game => {
+      const find = localGames?.find(g => g.id === game.id);
+      if (!find) {
+        gameToStorage.push(game);
       }
     });
 
+    if (gameToStorage.length > 0) {
+      this.gamesStorageService.saveGames(gameToStorage);
+    }
 
+    // TODO: probar la sincronización en sentido local => Firestore
     localGames?.forEach(async game => {
-      if(!remoteGames.find(g => g.id === game.id)) {
-        await this.saveGameInFirestore(game).toPromise().then(() => {});
+      if (!remoteGames.find(g => g.id === game.id)) {
+        await this.saveGameInFirestore(game).toPromise().then(() => { });
       }
     });
-
-    console.log('sync complete!!!');
-    
 
   }
 
