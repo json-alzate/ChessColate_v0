@@ -137,7 +137,7 @@ export class HomePage implements OnInit {
   getGames() {
 
     this.gamesStorageService.getGames().then(data => {
-      
+
       this.gamesSearched = JSON.parse(data.value);
       this.orderGameSearched();
       this.allGames = JSON.parse(data.value);
@@ -180,9 +180,38 @@ export class HomePage implements OnInit {
               this.isLastMove = false;
               this.isFirstMove = false;
               if (this.currentGame) {
+
+
+
+                const t = { ...this.currentGame };
+                console.log('t ', t);
+                
+
+
+
+
+
+
                 const currentMoveNumber = this.currentGame.currentMoveNumber;
-                const onStepForward = currentMoveNumber ? currentMoveNumber + 1 : 1;
-                this.currentGame.currentMoveNumber = onStepForward; // revisar que sucede en la navegación si lo suma de mas?
+                console.log('currentMoveNumber ', currentMoveNumber);
+                const onStepForward = (currentMoveNumber && currentMoveNumber > 1) ? currentMoveNumber + 1 : 1;
+
+                this.currentGame.currentMoveNumber = this.currentGame.movesFEN.length === 2 ? 2 : onStepForward; // revisar que sucede en la navegación si lo suma de mas?
+                const s = { ...this.currentGame };
+                console.log('current ', onStepForward, this.currentGame.movesFEN.length, s);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 if (onStepForward === this.currentGame.movesFEN.length) { // es la ultima jugada
 
@@ -198,8 +227,10 @@ export class HomePage implements OnInit {
                   this.searchGameByFen(this.chessInstance.fen());
 
                 } else {
+                  console.log(onStepForward, this.chessInstance.fen());
 
                   // cuando el movimiento no es el ultimo y es diferente al que sigue
+
                   if (this.currentGame.movesFEN[onStepForward] !== this.chessInstance.fen()) {
 
                     this.presentAlertPrompt(objectMove, 'current');
