@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 
-import { from, Observable, Subscriber } from 'rxjs';
+import { from, Observable, Observer, Subscriber } from 'rxjs';
 
 
 import { GamesStorageService } from '@services/games-storage.service';
 
-import { Game } from '@models/game.model'
+import { Game } from '@models/game.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GamesFirestoreService {
+
 
   constructor(
     private readonly angularFirestore: AngularFirestore,
@@ -20,34 +21,51 @@ export class GamesFirestoreService {
 
   syncGames(uidUser: string) {
 
-    this.getRemoteGames(uidUser).subscribe(remoteGames => {
-      this.gamesStorageService.getGames().then(data => {
-        const localGames: Game[] = JSON.parse(data.value) as Game[];
-        this.applySyncGames(remoteGames, localGames);
+    return new Observable((observer: Observer<boolean>) => {
+
+      this.getRemoteGames(uidUser).subscribe(remoteGames => {
+        this.gamesStorageService.getGames().then((data) => {
+          const localGames: Game[] = JSON.parse(data.value) as Game[];
+          this.applySyncGames(remoteGames, localGames).subscribe(result => {
+            if (result) {
+              observer.next(true);
+              observer.complete();
+            }
+          });
+        });
       });
     });
+
 
   }
 
   applySyncGames(remoteGames: Game[], localGames: Game[]) {
 
-    let gameToStorage: Game[] = [];
-    remoteGames?.forEach(game => {
-      const find = localGames?.find(g => g.id === game.id);
-      if (!find) {
-        gameToStorage.push(game);
-      }
-    });
+    return new Observable((observer: Observer<boolean>) => {
 
-    if (gameToStorage.length > 0) {
-      this.gamesStorageService.saveGames(gameToStorage);
-    }
 
-    // TODO: probar la sincronización en sentido local => Firestore
-    localGames?.forEach(async game => {
-      if (!remoteGames.find(g => g.id === game.id)) {
-        await this.saveGameInFirestore(game).toPromise().then(() => { });
+      let gameToStorage: Game[] = [];
+      remoteGames?.forEach(game => {
+        const find = localGames?.find(g => g.id === game.id);
+        if (!find) {
+          gameToStorage.push(game);
+        }
+      });
+
+      if (gameToStorage.length > 0) {
+        this.gamesStorageService.saveGames(gameToStorage).toPromise().then(() => {
+          observer.next(true);
+          observer.complete();
+        });
       }
+
+      localGames?.forEach(async game => {
+        if (!remoteGames.find(g => g.id === game.id)) {
+          await this.saveGameInFirestore(game).toPromise().then(() => { });
+        }
+      });
+
+
     });
 
   }

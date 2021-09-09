@@ -123,8 +123,12 @@ export class HomePage implements OnInit {
     );
     this.profile$.subscribe(profile => {
       this.profile = profile;
-      if(this.profile){
-        this.gamesFirestoreService.syncGames(this.profile.uid);
+      if (this.profile) {
+        this.gamesFirestoreService.syncGames(this.profile.uid).subscribe(complete => {
+          if (complete) {
+            this.getGames();
+          }
+        });
       }
     });
   }
@@ -133,6 +137,7 @@ export class HomePage implements OnInit {
   getGames() {
 
     this.gamesStorageService.getGames().then(data => {
+      
       this.gamesSearched = JSON.parse(data.value);
       this.orderGameSearched();
       this.allGames = JSON.parse(data.value);

@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@capacitor/storage';
 
 // rxjs
-import { Observable, Subscriber } from 'rxjs';
+import { Observable, Subscriber, Observer } from 'rxjs';
+
 
 // states
 
@@ -106,23 +107,34 @@ export class GamesStorageService {
   }
 
   saveGames(games: Game[]) {
-    Storage.get({
-      key: 'ChessColate_games'
-    }).then(data => {
 
-      if (data.value) {
-        const gamesInStorage = JSON.parse(data.value) as Game[];
-        const combinedGames: Game[]= {...gamesInStorage, ...games};
-        Storage.set({
-          key: 'ChessColate_games',
-          value: JSON.stringify(combinedGames)
-        });
-      } else {
-        Storage.set({
-          key: 'ChessColate_games',
-          value: JSON.stringify(games)
-        });
-      }
+    return new Observable((observer: Observer<Game[]>) => {
+
+      Storage.get({
+        key: 'ChessColate_games'
+      }).then(data => {
+  
+        if (data.value) {
+          const gamesInStorage = JSON.parse(data.value) as Game[];
+          const combinedGames: Game[]= {...gamesInStorage, ...games};
+          Storage.set({
+            key: 'ChessColate_games',
+            value: JSON.stringify(combinedGames)
+          }).then(() => {
+            observer.next(games);
+            observer.complete();
+          });
+        } else {
+          Storage.set({
+            key: 'ChessColate_games',
+            value: JSON.stringify(games)
+          }).then(() => {
+            observer.next(games);
+            observer.complete();
+          });
+        }
+      });
+
     });
   }
 
