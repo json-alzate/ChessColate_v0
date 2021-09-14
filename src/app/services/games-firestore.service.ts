@@ -26,7 +26,7 @@ export class GamesFirestoreService {
       this.getRemoteGames(uidUser).subscribe(remoteGames => {
         this.gamesStorageService.getGames().then((data) => {
           const localGames: Game[] = JSON.parse(data.value) as Game[];
-          this.applySyncGames(remoteGames, localGames).subscribe(result => {
+          this.applySyncGames(remoteGames, localGames, uidUser).subscribe(result => {
             if (result) {
               observer.next(true);
               observer.complete();
@@ -39,13 +39,16 @@ export class GamesFirestoreService {
 
   }
 
-  applySyncGames(remoteGames: Game[], localGames: Game[]) {
+  applySyncGames(remoteGames: Game[], localGames: Game[], uidUser: string) {
 
     return new Observable((observer: Observer<boolean>) => {
 
 
       let gameToStorage: Game[] = [];
       remoteGames?.forEach(game => {
+        console.log('localGames ', localGames);
+        console.log('remoteGames ', remoteGames);
+        
         const find = localGames?.find(g => g.id === game.id);
         if (!find) {
           gameToStorage.push(game);
@@ -53,6 +56,8 @@ export class GamesFirestoreService {
       });
 
       if (gameToStorage.length > 0) {
+        console.log(gameToStorage);
+        
         this.gamesStorageService.saveGames(gameToStorage).toPromise().then(() => {
           observer.next(true);
           observer.complete();
@@ -61,7 +66,7 @@ export class GamesFirestoreService {
 
       localGames?.forEach(async game => {
         if (!remoteGames.find(g => g.id === game.id)) {
-          await this.saveGameInFirestore(game).toPromise().then(() => { });
+          await this.saveGameInFirestore(game, uidUser).toPromise().then(() => { });
         }
       });
 
@@ -71,14 +76,15 @@ export class GamesFirestoreService {
   }
 
   readLocalGames(uidUser: string) {
-    this.gamesStorageService.getGames().then(data => {
-      const allGames: Game[] = JSON.parse(data.value) as Game[];
+    this.gamesStorageService.getGames().then(async data => {
+      const allGames: Game[] = await JSON.parse(data.value) as Game[];
+      console.log('allGames ', allGames);
 
       allGames?.forEach(game => {
 
         if (!game.syncFirestore) {
           const gameToUpdate: Game = { ...game, syncFirestore: true, uidUser };
-          this.saveGameInFirestore(game).toPromise().then(() => {
+          this.saveGameInFirestore(game, uidUser).toPromise().then(() => {
             this.gamesStorageService.updateGame(gameToUpdate, true);
           });
         }
@@ -115,9 +121,9 @@ export class GamesFirestoreService {
   }
 
 
-  saveGameInFirestore(game: Game): Observable<Game> {
+  saveGameInFirestore(game: Game, uidUser: string): Observable<Game> {
     const toReturn = this.angularFirestore.collection<Game>('games-cheat').doc(game.id).set({
-      ...game
+      ...game, uidUser
     });
     return from<Promise<Game>>(toReturn as unknown as Promise<Game>);
   }

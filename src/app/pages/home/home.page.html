@@ -58,7 +58,7 @@
 
   <app-tutorial *ngIf="!readyTutorial && (allGames?.length === 0 || !allGames) && readyDidEnter"></app-tutorial>
 
-  <div class="ion-padding" *ngIf="gamesSearched.length === 0 && readyTutorial">
+  <div class="ion-padding" *ngIf="gamesSearched?.length === 0 && readyTutorial">
     <ion-text color="text">
       <p class="ion-text-center">
         <small>
