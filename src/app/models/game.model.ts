@@ -5,6 +5,7 @@ export interface Move {
 
 export interface Game {
     id: string;
+    uidUser?: string;
     name: string;
     nameFrom?: string;
     movesFEN: string[];
@@ -15,4 +16,5 @@ export interface Game {
     inFavorites?: boolean;
     currentMoveNumber?: number;
     orientation?: 'w' | 'b';
+    syncFirestore?: boolean;
 }

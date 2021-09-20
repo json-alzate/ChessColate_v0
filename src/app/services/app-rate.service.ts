@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { Capacitor, Plugins } from '@capacitor/core';
-const { Storage } = Plugins;
+import { Capacitor } from '@capacitor/core';
+import { Storage } from '@capacitor/storage';
 import { AppRate } from '@ionic-native/app-rate/ngx';
 
 import { differenceInDays } from 'date-fns';

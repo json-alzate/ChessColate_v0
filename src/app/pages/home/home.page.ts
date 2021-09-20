@@ -1,14 +1,11 @@
+// core and third party libraries
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ModalController, PopoverController, AlertController } from '@ionic/angular';
-
-import { Plugins } from '@capacitor/core';
-
-const { Storage } = Plugins;
+import { Storage } from '@capacitor/storage';
+import { Store, select } from '@ngrx/store';
 
 import { v4 as uuidv4 } from 'uuid';
-
 import Chess from 'chess.js';
-
 import {
   COLOR,
   INPUT_EVENT_TYPE,
@@ -16,18 +13,33 @@ import {
   Chessboard
 } from 'cm-chessboard/src/cm-chessboard/Chessboard.js';
 
+// rxjs
+import { Observable } from 'rxjs';
+
+
+// states
+import { AppState } from '@redux/states/app.state'
+
+
+// actions
+
+// selectors
+import { getProfile } from '@redux/selectors/profile.selector';
+
 
 // models
-import { Game, Move } from '../../models/game.model';
+import { Game, Move } from '@models/game.model';
+import { Profile } from '@models/profile.model';
+
+
+// services
+import { GamesStorageService } from '@services/games-storage.service';
+import { GamesFirestoreService } from '@services/games-firestore.service';
+import { MessagesService } from '@services/messages.service';
 
 // components
 import { ModalSearchGameComponent } from './components/modal-search-game/modal-search-game.component';
 
-
-// services
-import { GamesStorageService } from '../../services/games-storage.service';
-import { MessagesService } from '../../services/messages.service';
-import { AppRateService } from '../../services/app-rate.service';
 
 
 @Component({
@@ -53,10 +65,14 @@ export class HomePage implements OnInit {
   gamesSearched: Game[] = [];
   allGames: Game[] = [];
 
+  remoteGames: Game[] = [];
 
 
   readyTutorial = false;
   readyDidEnter = false;
+
+  profile: Profile;
+  profile$: Observable<Profile>;
 
 
   constructor(
@@ -66,6 +82,8 @@ export class HomePage implements OnInit {
     private alertController: AlertController,
     private gamesStorageService: GamesStorageService,
     private messagesService: MessagesService,
+    private gamesFirestoreService: GamesFirestoreService,
+    private store: Store<AppState>
   ) {
 
     Storage.get({
@@ -75,24 +93,51 @@ export class HomePage implements OnInit {
         this.readyTutorial = true;
       }
     });
+
+    this.listenNeedReadAllGames();
   }
+
 
   ngOnInit(): void {
-
     this.getGames();
-    // this.appRateService.launchRate();
+    this.listenProfile();
   }
 
+
   ionViewDidEnter() {
-    if(!this.readyDidEnter){
+    if (!this.readyDidEnter) {
       this.loadBoard();
       this.readyDidEnter = true;
     }
   }
 
+
+  listenNeedReadAllGames() {
+    this.gamesStorageService.readAllGames.subscribe(() => this.getGames());
+  }
+
+
+  listenProfile() {
+    this.profile$ = this.store.pipe(
+      select(getProfile)
+    );
+    this.profile$.subscribe(profile => {
+      this.profile = profile;
+      if (this.profile) {
+        this.gamesFirestoreService.syncGames(this.profile.uid).subscribe(complete => {
+          if (complete) {
+            this.getGames();
+          }
+        });
+      }
+    });
+  }
+
+
   getGames() {
 
     this.gamesStorageService.getGames().then(data => {
+
       this.gamesSearched = JSON.parse(data.value);
       this.orderGameSearched();
       this.allGames = JSON.parse(data.value);
@@ -103,12 +148,11 @@ export class HomePage implements OnInit {
   }
 
 
+
   async loadBoard() {
     this.board = await new Chessboard(document.getElementById('board1'), {
       position: 'start',
-      sprite: { url: '/assets/images/chessboard-sprite.svg' }
-      // warning deprecated
-      // moveInputMode: MOVE_INPUT_MODE.dragPiece
+      // sprite: { url: '/assets/images/chessboard-sprite.svg' }
     });
 
 
@@ -136,9 +180,20 @@ export class HomePage implements OnInit {
               this.isLastMove = false;
               this.isFirstMove = false;
               if (this.currentGame) {
+
+
                 const currentMoveNumber = this.currentGame.currentMoveNumber;
-                const onStepForward = currentMoveNumber ? currentMoveNumber + 1 : 1;
-                this.currentGame.currentMoveNumber = onStepForward; // revisar que sucede en la navegación si lo suma de mas?
+
+                let onStepForward = 1;
+
+                if (currentMoveNumber > 1) {
+                  onStepForward = currentMoveNumber + 1;
+                } else if (currentMoveNumber === 1 && this.currentGame.movesFEN.length === 2) {
+                  onStepForward = 2;
+                }
+
+                this.currentGame.currentMoveNumber = this.currentGame.movesFEN.length === 2 ? 2 : onStepForward;
+
 
                 if (onStepForward === this.currentGame.movesFEN.length) { // es la ultima jugada
 
@@ -150,6 +205,7 @@ export class HomePage implements OnInit {
                   this.currentGame.movesHumanHistoryRow = [...this.currentGame.movesHumanHistoryRow, chessHistory[chessHistory.length - 1]];
 
                   this.gamesStorageService.updateGame(this.currentGame);
+                  this.updateGameOnFirestore();
                   this.searchGameByFen(this.chessInstance.fen());
 
                 } else {
@@ -221,9 +277,10 @@ export class HomePage implements OnInit {
       }
     }
 
-    if( this.currentGame ){
+    if (this.currentGame) {
       this.currentGame.orientation = orientationToSave;
       this.gamesStorageService.updateGame(this.currentGame);
+      this.updateGameOnFirestore();
     }
 
 
@@ -304,10 +361,16 @@ export class HomePage implements OnInit {
       movesFEN = [this.currentGame.movesFEN[currentMoveNumber], this.chessInstance.fen()];
     }
 
+    let uidUser;
+    if (this.profile) {
+      uidUser = this.profile.uid;
+    }
+
     const newObject: Game = {
       id: uuidv4(),
       name,
       nameFrom,
+      uidUser,
       movesFEN,
       movesHumanHistoryRow,
       moves,
@@ -315,15 +378,14 @@ export class HomePage implements OnInit {
       inFavorites: false
     };
 
-
     this.gamesStorageService.saveGame(newObject);
+
+    this.currentGame = newObject;
     if (this.currentGame) {
-      this.currentGame = newObject;
       this.currentGame.currentMoveNumber = 1;
       this.isLastMove = true;
       this.searchGameByFen(this.chessInstance.fen());
     } else {
-      this.currentGame = newObject;
       this.getGames();
     }
     this.messagesService.showToast('Juego creado!');
@@ -331,7 +393,6 @@ export class HomePage implements OnInit {
   }
 
   onClickOnGame(game: Game) {
-    // console.log('click game ', game);
     if (game.orientation) {
       this.turnRoundBoard(game.orientation);
     }
@@ -393,11 +454,13 @@ export class HomePage implements OnInit {
   addToFavorites() {
     this.currentGame.inFavorites = true;
     this.gamesStorageService.updateGame(this.currentGame);
+    this.updateGameOnFirestore();
   }
 
   removeFromFavorites() {
     this.currentGame.inFavorites = false;
     this.gamesStorageService.updateGame(this.currentGame);
+    this.updateGameOnFirestore();
   }
 
 
@@ -429,6 +492,9 @@ export class HomePage implements OnInit {
     this.gamesStorageService.deleteGame(game).then(() => {
       this.getGames();
       this.messagesService.showToast('Juego eliminado...', 'danger');
+      if (game.syncFirestore) {
+        this.gamesFirestoreService.deleteGame(game.id);
+      }
     });
   }
 
@@ -464,17 +530,20 @@ export class HomePage implements OnInit {
   }
 
   orderGameSearched() {
-    const temSearched = this.gamesSearched?.sort((obj1, obj2) => {
-      if (obj1.name > obj2.name) {
-        return 1;
-      }
-      if (obj1.name < obj2.name) {
-        return -1;
-      }
-      return 0;
-    });
+    let temSearched: Game[];
+    if (this.gamesSearched?.length > 1) {
+      temSearched = this.gamesSearched?.sort((obj1, obj2) => {
+        if (obj1.name > obj2.name) {
+          return 1;
+        }
+        if (obj1.name < obj2.name) {
+          return -1;
+        }
+        return 0;
+      });
+    }
 
-    this.gamesSearched = temSearched ? temSearched : [];
+    this.gamesSearched = temSearched ? temSearched : this.gamesSearched;
   }
 
 
@@ -503,8 +572,16 @@ export class HomePage implements OnInit {
 
   openSettings() { }
 
-  // Rate app
-  launchRateApp(){
+
+  // update game on firestore
+  updateGameOnFirestore() {
+    if (this.profile && this.currentGame.syncFirestore) {
+      const gameToFirestore: Game = {
+        ...this.currentGame,
+        uidUser: this.profile.uid
+      };
+      this.gamesFirestoreService.updateGame(gameToFirestore).toPromise().then(() => { });
+    }
 
   }
 

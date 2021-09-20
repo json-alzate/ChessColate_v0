@@ -1,14 +1,25 @@
+// core and third party libraries
 import { Injectable } from '@angular/core';
+import { Storage } from '@capacitor/storage';
 
-// import { Storage } from '@capacitor/storage';
+// rxjs
+import { Observable, Subscriber, Observer } from 'rxjs';
 
-import { Plugins } from '@capacitor/core';
 
-const { Storage } = Plugins;
+// states
 
-import { Observable } from 'rxjs';
+// actions
 
-import { Game } from '../models/game.model';
+// selectors
+
+// models
+import { Game } from '@models/game.model';
+
+// services
+
+// components
+
+
 
 // variables local storage
 // ChessColate_games
@@ -18,8 +29,16 @@ import { Game } from '../models/game.model';
 })
 export class GamesStorageService {
 
+  observerNeedReadGames: Subscriber<boolean>;
+  public readAllGames: Observable<boolean> = new Observable((observer) => {
+    // observable execution
+    this.observerNeedReadGames = observer;
+  });
 
-  constructor() { }
+
+
+  constructor(
+  ) { }
 
 
   getGames() {
@@ -30,7 +49,7 @@ export class GamesStorageService {
 
   }
 
-  updateGame(game: Game) {
+  updateGame(game: Game, isFromFirestore?: boolean) {
 
     // ¿por que lo eliminaba?  8/05/2021
     // delete game.currentMoveNumber;
@@ -38,12 +57,16 @@ export class GamesStorageService {
     Storage.get({
       key: 'ChessColate_games'
     }).then(data => {
-      const games = JSON.parse(data.value) as Game[];
+      const games = JSON.parse(data.value) as Game[];      
       games.splice(games.findIndex(a => a.id === game.id), 1);
       games.push(game);
       Storage.set({
         key: 'ChessColate_games',
         value: JSON.stringify(games)
+      }).then(() => {
+        if (isFromFirestore) {
+          this.observerNeedReadGames.next(true);
+        }
       });
     });
   }
@@ -81,6 +104,38 @@ export class GamesStorageService {
       }
     });
 
+  }
+
+  saveGames(games: Game[]) {
+
+    return new Observable((observer: Observer<Game[]>) => {
+
+      Storage.get({
+        key: 'ChessColate_games'
+      }).then(data => {
+  
+        if (data.value) {
+          const gamesInStorage = JSON.parse(data.value) as Game[];          
+          const combinedGames: Game[]= [...gamesInStorage, ...games];          
+          Storage.set({
+            key: 'ChessColate_games',
+            value: JSON.stringify(combinedGames)
+          }).then(() => {
+            observer.next(games);
+            observer.complete();
+          });
+        } else {
+          Storage.set({
+            key: 'ChessColate_games',
+            value: JSON.stringify(games)
+          }).then(() => {
+            observer.next(games);
+            observer.complete();
+          });
+        }
+      });
+
+    });
   }
 
 
