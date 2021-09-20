@@ -84,6 +84,8 @@ export class SettingsPage implements OnInit {
   onLogout() {
     const action = logOut();
     this.store.dispatch(action);
+    this.profile = null;
+    this.authService.logout();
   }
 
 }
