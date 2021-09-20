@@ -57,9 +57,7 @@ export class GamesStorageService {
     Storage.get({
       key: 'ChessColate_games'
     }).then(data => {
-      const games = JSON.parse(data.value) as Game[];
-      console.log('games ', games);
-      
+      const games = JSON.parse(data.value) as Game[];      
       games.splice(games.findIndex(a => a.id === game.id), 1);
       games.push(game);
       Storage.set({
@@ -117,8 +115,8 @@ export class GamesStorageService {
       }).then(data => {
   
         if (data.value) {
-          const gamesInStorage = JSON.parse(data.value) as Game[];
-          const combinedGames: Game[]= {...gamesInStorage, ...games};
+          const gamesInStorage = JSON.parse(data.value) as Game[];          
+          const combinedGames: Game[]= [...gamesInStorage, ...games];          
           Storage.set({
             key: 'ChessColate_games',
             value: JSON.stringify(combinedGames)

@@ -46,18 +46,13 @@ export class GamesFirestoreService {
 
       let gameToStorage: Game[] = [];
       remoteGames?.forEach(game => {
-        console.log('localGames ', localGames);
-        console.log('remoteGames ', remoteGames);
-        
         const find = localGames?.find(g => g.id === game.id);
         if (!find) {
           gameToStorage.push(game);
         }
       });
 
-      if (gameToStorage.length > 0) {
-        console.log(gameToStorage);
-        
+      if (gameToStorage.length > 0) {        
         this.gamesStorageService.saveGames(gameToStorage).toPromise().then(() => {
           observer.next(true);
           observer.complete();
@@ -78,8 +73,6 @@ export class GamesFirestoreService {
   readLocalGames(uidUser: string) {
     this.gamesStorageService.getGames().then(async data => {
       const allGames: Game[] = await JSON.parse(data.value) as Game[];
-      console.log('allGames ', allGames);
-
       allGames?.forEach(game => {
 
         if (!game.syncFirestore) {

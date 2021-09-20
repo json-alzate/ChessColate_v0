@@ -141,8 +141,6 @@ export class HomePage implements OnInit {
       this.gamesSearched = JSON.parse(data.value);
       this.orderGameSearched();
       this.allGames = JSON.parse(data.value);
-      console.log(data.value);
-
       this.countGames = this.gamesSearched ? this.gamesSearched.length : 0;
       this.changeDetectorRef.markForCheck();
     });
