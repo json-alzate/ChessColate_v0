@@ -1,6 +1,6 @@
 export interface Settings {
     figures: boolean;
-    darkMode: boolean;
+    darkMode: 'enabled' | 'disabled';
 }
 
 export interface Profile {

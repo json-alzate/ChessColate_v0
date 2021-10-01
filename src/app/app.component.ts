@@ -61,12 +61,11 @@ export class AppComponent implements OnInit {
     if (Capacitor.getPlatform() !== 'web') {
       this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
     }
-    this.store.pipe(select(getDarkMode)).subscribe(enabled => {
-      // const activeDarkTeme = (theme && theme === 'dark') ? true : false;
-      console.log('activar ', !enabled);
 
+    this.authService.observerDarkMode().subscribe(enabled => {
       document.body.classList.toggle('dark', enabled ? true : false);
     });
+
     this.listenerAuth();
   }
 
@@ -89,6 +88,10 @@ export class AppComponent implements OnInit {
         this.gamesFirestoreService.readLocalGames(fbUser.uid);
 
       } else {
+
+        this.authService.getDarkMode().then(enabled => {
+          this.authService.setValueObserverDarkMode(enabled.value && enabled.value === 'enabled' ? true : false);
+        });
         console.log('sin usuario logueado')
       }
     });

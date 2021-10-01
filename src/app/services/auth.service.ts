@@ -5,14 +5,14 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { Storage } from '@capacitor/storage';
 
 
-import  firebase  from 'firebase/app';
+import firebase from 'firebase/app';
 
 import { Platform } from '@ionic/angular';
 
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 // rxjs
-import { from, Observable } from 'rxjs';
+import { from, Observable, Observer, Subscriber } from 'rxjs';
 
 // states
 
@@ -35,6 +35,7 @@ import { Profile } from '@models/profile.model';
 })
 export class AuthService {
 
+  obsDarkMode: Observer<boolean>;
 
   constructor(
     private angularFireAuth: AngularFireAuth,
@@ -93,10 +94,30 @@ export class AuthService {
     return from(toReturn);
   }
 
+  observerDarkMode(): Observable<boolean> {
+    return new Observable((observer: Observer<boolean>) => {
+      this.obsDarkMode = observer;
+    });
+  }
+
+  setValueObserverDarkMode(value: boolean) {
+    this.obsDarkMode.next(value);
+  }
+
+  killObsDarkMode() {
+    this.obsDarkMode.complete();
+  }
+
   setDarkMode(darkMode: boolean) {
     Storage.set({
       key: 'chesscolate_darkMode',
       value: darkMode ? 'enabled' : 'disabled'
+    });
+  }
+
+  getDarkMode() {
+    return Storage.get({
+      key: 'chesscolate_darkMode'
     });
   }
 

@@ -1,5 +1,6 @@
 // core and third party libraries
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { environment } from '@environments/environment';
 import { Store, select } from '@ngrx/store';
 
@@ -35,6 +36,7 @@ export class SettingsPage implements OnInit {
 
   version = environment.versionName;
   profile: Profile;
+  darkModeControl = new FormControl(false);
 
   figures = true;
 
@@ -42,8 +44,7 @@ export class SettingsPage implements OnInit {
     private store: Store<AppState>,
     private authService: AuthService,
     private appRateService: AppRateService
-  ) {
-  }
+  ) { }
 
   ngOnInit() {
     this.listenProfile();
@@ -57,12 +58,22 @@ export class SettingsPage implements OnInit {
       if (profile) {
         this.profile = profile;
         this.figures = profile?.settings?.figures;
+        this.darkModeControl.setValue(profile?.settings?.darkMode);
+      } else {
+        this.authService.getDarkMode().then(enabled => {
+          this.darkModeControl.setValue(enabled.value && enabled.value === 'enabled' ? true : false);
+        });
       }
     });
   }
 
   loginGoogle() {
     this.authService.loginGoogle();
+  }
+
+  onChangeDarkMode(){
+    this.authService.setDarkMode(this.darkModeControl.value);
+    this.authService.setValueObserverDarkMode(this.darkModeControl.value);
   }
 
   onChangeFigures() {
