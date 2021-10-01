@@ -16,6 +16,7 @@ import { AppState } from '@redux/states/app.state'
 import { setProfile } from '@redux/actions/profile.actions';
 
 // selectors
+import { getDarkMode } from '@redux/selectors/profile.selector';
 
 // models
 import { Profile } from '@models/profile.model';
@@ -38,6 +39,8 @@ import { GamesFirestoreService } from '@services/games-firestore.service';
 // chesscolate_lastDateOpenApp
 // chesscolate_timesOpenApp
 
+// chesscolate_darkMode
+
 
 
 @Component({
@@ -58,6 +61,12 @@ export class AppComponent implements OnInit {
     if (Capacitor.getPlatform() !== 'web') {
       this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
     }
+    this.store.pipe(select(getDarkMode)).subscribe(enabled => {
+      // const activeDarkTeme = (theme && theme === 'dark') ? true : false;
+      console.log('activar ', !enabled);
+
+      document.body.classList.toggle('dark', enabled ? true : false);
+    });
     this.listenerAuth();
   }
 
@@ -98,7 +107,8 @@ export class AppComponent implements OnInit {
       name: fbUser.displayName,
       createdAt: new Date().getTime(),
       settings: {
-        figures: true
+        figures: true,
+        darkMode: false //TODO: Obtener el darkmode actual
       }
     };
     this.authService.createDocumentUser(profile).toPromise().then(() => this.setProfile(profile));

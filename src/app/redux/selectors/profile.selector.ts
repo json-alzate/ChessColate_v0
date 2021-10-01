@@ -7,3 +7,8 @@ export const getProfile = createSelector(
     getProfileState,
     getProfileState => getProfileState
 );
+
+export const getDarkMode = createSelector(
+    getProfileState,
+    profile => profile?.settings?.darkMode
+);

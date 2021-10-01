@@ -1,7 +1,9 @@
 // core and third party libraries
-import { ComponentFactoryResolver, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { Storage } from '@capacitor/storage';
+
 
 import  firebase  from 'firebase/app';
 
@@ -89,6 +91,13 @@ export class AuthService {
   logout() {
     const toReturn = this.angularFireAuth.signOut();
     return from(toReturn);
+  }
+
+  setDarkMode(darkMode: boolean) {
+    Storage.set({
+      key: 'chesscolate_darkMode',
+      value: darkMode ? 'enabled' : 'disabled'
+    });
   }
 
 

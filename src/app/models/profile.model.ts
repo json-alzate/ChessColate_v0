@@ -1,5 +1,6 @@
 export interface Settings {
     figures: boolean;
+    darkMode: boolean;
 }
 
 export interface Profile {
