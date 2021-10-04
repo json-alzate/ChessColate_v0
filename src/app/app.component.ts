@@ -5,7 +5,7 @@ import { SplashScreen } from '@capacitor/splash-screen';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { AngularFirestore } from '@angular/fire/firestore';
 import firebase from 'firebase/app';
-import { Store, select } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 
 // rxjs
 
@@ -16,10 +16,9 @@ import { AppState } from '@redux/states/app.state'
 import { setProfile } from '@redux/actions/profile.actions';
 
 // selectors
-import { getDarkMode } from '@redux/selectors/profile.selector';
 
 // models
-import { Profile } from '@models/profile.model';
+import { Profile, Settings } from '@models/profile.model';
 
 // services
 import { AppRateService } from '@services/app-rate.service';
@@ -49,6 +48,9 @@ import { GamesFirestoreService } from '@services/games-firestore.service';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent implements OnInit {
+
+  darkModeEnable: boolean;
+
   constructor(
     private readonly angularFirestore: AngularFirestore,
     private screenOrientation: ScreenOrientation,
@@ -63,6 +65,8 @@ export class AppComponent implements OnInit {
     }
 
     this.authService.observerDarkMode().subscribe(enabled => {
+      
+      this.darkModeEnable = enabled;
       document.body.classList.toggle('dark', enabled ? true : false);
     });
 
@@ -78,8 +82,22 @@ export class AppComponent implements OnInit {
       if (fbUser) {
         const usersRef = this.angularFirestore.firestore.collection('Users').doc(fbUser.uid);
         usersRef.get().then((doc) => {
+          
           if (doc.exists) {
             const profile: Profile = { ...doc.data() as Profile, uid: doc.id };
+            const isDarkModeEnable = profile.settings.darkMode === 'enabled' ? true : false;
+            if (profile.settings.darkMode) {
+              
+              this.authService.setDarkMode(isDarkModeEnable);
+              this.authService.setValueObserverDarkMode(isDarkModeEnable);
+            } else {
+              this.authService.getDarkMode().then(darkModeStatus => {
+                const settings: Settings = { ...profile?.settings, darkMode: darkModeStatus ? 'enabled' : 'disabled' };
+                const profileToUpdate: Profile = { ...profile, settings };
+                this.updateProfile(profileToUpdate)
+
+              });
+            }
             this.setProfile(profile);
           } else {
             this.registerUserOnFirestore(fbUser);
@@ -92,7 +110,6 @@ export class AppComponent implements OnInit {
         this.authService.getDarkMode().then(enabled => {
           this.authService.setValueObserverDarkMode(enabled.value && enabled.value === 'enabled' ? true : false);
         });
-        console.log('sin usuario logueado')
       }
     });
   }
@@ -111,12 +128,19 @@ export class AppComponent implements OnInit {
       createdAt: new Date().getTime(),
       settings: {
         figures: true,
-        darkMode: false //TODO: Obtener el darkmode actual
+        darkMode: this.darkModeEnable ? 'enabled' : 'disabled'
       }
     };
     this.authService.createDocumentUser(profile).toPromise().then(() => this.setProfile(profile));
 
   }
+
+  updateProfile(profile: Profile) {
+    this.authService.updateProfile(profile);
+    const action = setProfile({ profile });
+    this.store.dispatch(action);
+  }
+
 
 
 }

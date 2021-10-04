@@ -50,6 +50,12 @@ export class SettingsPage implements OnInit {
     this.listenProfile();
   }
 
+  ionViewDidEnter(){
+    this.authService.getDarkMode().then(enabled => {
+      this.darkModeControl.setValue(enabled.value && enabled.value === 'enabled' ? true : false);
+    });
+  }
+
 
   listenProfile() {
     this.store.pipe(
@@ -58,12 +64,7 @@ export class SettingsPage implements OnInit {
       if (profile) {
         this.profile = profile;
         this.figures = profile?.settings?.figures;
-        this.darkModeControl.setValue(profile?.settings?.darkMode);
-      } else {
-        this.authService.getDarkMode().then(enabled => {
-          this.darkModeControl.setValue(enabled.value && enabled.value === 'enabled' ? true : false);
-        });
-      }
+      } 
     });
   }
 
@@ -71,13 +72,19 @@ export class SettingsPage implements OnInit {
     this.authService.loginGoogle();
   }
 
-  onChangeDarkMode(){
+  onChangeDarkMode() {
     this.authService.setDarkMode(this.darkModeControl.value);
     this.authService.setValueObserverDarkMode(this.darkModeControl.value);
+    if (this.profile) {
+      const settings: Settings = { ...this.profile?.settings, darkMode: this.darkModeControl.value ? 'enabled' : 'disabled' };
+      const profileToUpdate: Profile = { ...this.profile, settings };
+      this.authService.updateProfile(profileToUpdate);
+      this.updateProfile(profileToUpdate)
+    }
   }
 
   onChangeFigures() {
-    const settings = { ...this.profile?.settings, figures: this.figures };
+    const settings: Settings = { ...this.profile?.settings, figures: this.figures };
     const profileToUpdate: Profile = { ...this.profile, settings };
     this.authService.updateProfile(profileToUpdate);
     this.updateProfile(profileToUpdate)
