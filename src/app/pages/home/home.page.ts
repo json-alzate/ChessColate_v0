@@ -36,6 +36,7 @@ import { Profile } from '@models/profile.model';
 import { GamesStorageService } from '@services/games-storage.service';
 import { GamesFirestoreService } from '@services/games-firestore.service';
 import { MessagesService } from '@services/messages.service';
+import { AuthService } from '@services/auth.service';
 
 // components
 import { ModalSearchGameComponent } from './components/modal-search-game/modal-search-game.component';
@@ -74,6 +75,8 @@ export class HomePage implements OnInit {
   profile: Profile;
   profile$: Observable<Profile>;
 
+  isEnableDarkMode: boolean;
+
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -83,7 +86,8 @@ export class HomePage implements OnInit {
     private gamesStorageService: GamesStorageService,
     private messagesService: MessagesService,
     private gamesFirestoreService: GamesFirestoreService,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private authService: AuthService
   ) {
 
     Storage.get({
@@ -106,8 +110,15 @@ export class HomePage implements OnInit {
 
   ionViewDidEnter() {
     if (!this.readyDidEnter) {
-      this.loadBoard();
-      this.readyDidEnter = true;
+
+      this.authService.getDarkMode().then(isEnable => {        
+        this.isEnableDarkMode = isEnable?.value === 'enabled' ? true : false;
+
+      }).finally(() => { 
+        this.loadBoard();
+        this.readyDidEnter = true;
+      })
+
     }
   }
 
@@ -152,6 +163,9 @@ export class HomePage implements OnInit {
   async loadBoard() {
     this.board = await new Chessboard(document.getElementById('board1'), {
       position: 'start',
+      style: {
+        cssClass: this.isEnableDarkMode ? "black-and-white" : null
+      }
       // sprite: { url: '/assets/images/chessboard-sprite.svg' }
     });
 

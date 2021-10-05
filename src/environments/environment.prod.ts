@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   versionCode: 3,
-  versionName: "1.1.1",
+  versionName: "1.2.1",
   firebaseConfig: {
     apiKey: "AIzaSyAjga1aJ7fdk6F0yqyzN85-3sbLmtaozus",
     authDomain: "chesscolate.firebaseapp.com",

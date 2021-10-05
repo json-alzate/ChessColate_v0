@@ -36,7 +36,12 @@
           <ion-icon color="danger" slot="icon-only" name="power-outline"></ion-icon>
         </ion-button>
 
-        <img class="img-avatar" [src]="profile.avatarUrl" [alt]="profile.name">
+        <ion-avatar class="img-avatar">
+          <img [src]="profile.avatarUrl"
+            onerror="this.onerror=null;this.src='assets/images/ELO/avatar-on-error.jpg';" />
+        </ion-avatar>
+
+
         <h2 class="ion-text-center">
           {{ profile.name }}
         </h2>
