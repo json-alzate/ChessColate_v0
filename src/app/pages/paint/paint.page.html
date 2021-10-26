@@ -1,6 +1,22 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>paint</ion-title>
+    <ion-title>Paint</ion-title>
+    <ion-buttons slot="end">
+
+      <ion-button>
+        <ion-icon slot="icon-only" name="trash"></ion-icon>
+      </ion-button>
+
+      <ion-button>
+        <ion-icon slot="icon-only" name="brush"></ion-icon>
+      </ion-button>
+
+      <ion-button>
+        <ion-icon slot="icon-only" name="save"></ion-icon>
+      </ion-button>
+
+
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -8,8 +24,13 @@
 
   <canvas #myCanvas></canvas>
 
-  <div class="board" id="board1">
+  <div  *ngIf="!showingCanvas" class="board" id="boardPaint">
   </div>
+
+  <ion-item>
+    <ion-label>Mostrar lienzo</ion-label>
+    <ion-toggle (ionChange)="onChangeShowCanvas($event)" color="primary"></ion-toggle>
+  </ion-item>
 
 
 </ion-content>

@@ -14,7 +14,7 @@ import { AuthService } from '@services/auth.service';
 
 interface MatrizBoardBox {
   name: string;
-  x : number,
+  x: number,
   y: number;
   matrizLetter: number;
   matrizNumber: number;
@@ -34,6 +34,8 @@ export class PaintPage implements OnInit {
   @ViewChild('myCanvas') canvas: ElementRef;
   canvasElement: any;
   canvasReadyBuild = false;
+  showingCanvas = false;
+
 
   board;
   chessInstance = new Chess();
@@ -44,37 +46,37 @@ export class PaintPage implements OnInit {
 
 
   pieces = [
-    { piece: 'W_TR', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'W_CR', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'W_AR', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'W_RR', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'W_DD', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'W_AD', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'W_CD', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'W_TD', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'W_PA', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'W_PB', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'W_PC', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'W_PD', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'W_PE', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'W_PF', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'W_PH', color: '#36abe0', positionStart: '', positionEnd: ''},
+    { piece: 'W_TR', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_CR', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_AR', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_RR', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_DD', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_AD', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_CD', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_TD', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PA', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PB', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PC', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PD', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PE', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PF', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PH', color: '#36abe0', positionStart: '', positionEnd: '' },
 
-    { piece: 'B_TR', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'B_CR', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'B_AR', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'B_RR', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'B_DD', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'B_AD', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'B_CD', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'B_TD', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'B_PA', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'B_PB', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'B_PC', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'B_PD', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'B_PE', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'B_PF', color: '#36abe0', positionStart: '', positionEnd: ''},
-    { piece: 'B_PH', color: '#36abe0', positionStart: '', positionEnd: ''}
+    { piece: 'B_TR', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_CR', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_AR', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_RR', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_DD', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_AD', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_CD', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_TD', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_PA', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_PB', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_PC', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_PD', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_PE', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_PF', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_PH', color: '#36abe0', positionStart: '', positionEnd: '' }
   ];
 
   matrizBoardBox: MatrizBoardBox[] = [];
@@ -90,10 +92,10 @@ export class PaintPage implements OnInit {
   ionViewDidEnter() {
     if (!this.readyDidEnter) {
 
-      this.authService.getDarkMode().then(isEnable => {        
+      this.authService.getDarkMode().then(isEnable => {
         this.isEnableDarkMode = isEnable?.value === 'enabled' ? true : false;
 
-      }).finally(() => { 
+      }).finally(() => {
         this.loadBoard();
         this.readyDidEnter = true;
       })
@@ -102,7 +104,7 @@ export class PaintPage implements OnInit {
   }
 
   async loadBoard() {
-    this.board = await new Chessboard(document.getElementById('board1'), {
+    this.board = await new Chessboard(document.getElementById('boardPaint'), {
       position: 'start',
       style: {
         cssClass: this.isEnableDarkMode ? "black-and-white" : null
@@ -158,41 +160,61 @@ export class PaintPage implements OnInit {
 
     console.log(0, this.board.view.width);
     console.log(0, this.board.view.height);
-    
 
-    // context.fillStyle = 'red';
-    // context.fillRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+
+    context.fillStyle = 'red';
+    context.fillRect(0, 0, this.canvasElement.width, this.canvasElement.height);
     this.canvasReadyBuild = true;
+    this.matrizBoard();
 
   }
 
-  matrizBoard(){
+  matrizBoard() {
 
     const sizeBoxX = this.board.view.width / 8;
     const sizeBoxY = this.board.view.height / 8;
 
-    this.matrizBoardBox = [];
-    const letters = ['','a','b','c','d','e','f','g','h'];
+    console.log(sizeBoxX, sizeBoxY);
+    
 
-    // se crean desde la columna a [a1,a2, a3..]
-    for (let letter = 1; letter <= 8; letter++) {
-      
-      // esto corresponde a cada casilla, x, y = el punto medio de la casilla para dibujar
-      // for (let numb = 1; numb <= 8; numb++) {
-      //   const element: MatrizBoardBox  = {
-      //     matrizLetter : letter,
-      //     matrizNumber : numb,
-      //     name: `${letters[letter]}${numb}`,
-      //     letter: letters[letter],
-      //     numb,
-      //     x,
-      //     y
-      //   };
-        
-      // }
-      
+    this.matrizBoardBox = [];
+    const letters = ['', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+    // se crean desde la fila a [a8, b8, c8...]
+
+
+
+    // esto corresponde a cada casilla, x, y = el punto medio de la casilla para dibujar
+    for (let numb = 8; numb >= 1; numb--) {
+
+      for (let letter = 1; letter <= 8; letter++) {
+        console.log('letra ', letters[letter]);
+        // const element: MatrizBoardBox  = {
+        //   matrizLetter : letter,
+        //   matrizNumber : numb,
+        //   name: `${letters[letter]}${numb}`,
+        //   letter: letters[letter],
+        //   numb,
+        //   x,
+        //   y
+        // };
+        console.log('numero ', numb);
+
+      }
+
     }
 
+  }
+
+
+  onChangeShowCanvas(event: Event) {
+    this.showingCanvas = !this.showingCanvas;
+    if(this.showingCanvas){
+      this.loadBoard();
+      // TODO: No se vulve a ocultar el tablero despues de ocultarlo con ng if, utilizar display: hidden de css? 
+      // o ponerlo simplemente transparente
+     
+    }
   }
 
 
