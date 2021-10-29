@@ -34,6 +34,7 @@ export class PaintPage implements OnInit {
   @ViewChild('myCanvas') canvas: ElementRef;
   canvasElement: any;
   canvasReadyBuild = false;
+  disableShowCanvas = true;
   showingCanvas = false;
 
 
@@ -166,7 +167,7 @@ export class PaintPage implements OnInit {
     context.fillRect(0, 0, this.canvasElement.width, this.canvasElement.height);
     this.canvasReadyBuild = true;
     this.matrizBoard();
-
+    this.disableShowCanvas = false;
   }
 
   matrizBoard() {
@@ -175,7 +176,7 @@ export class PaintPage implements OnInit {
     const sizeBoxY = this.board.view.height / 8;
 
     console.log(sizeBoxX, sizeBoxY);
-    
+
 
     this.matrizBoardBox = [];
     const letters = ['', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -209,12 +210,9 @@ export class PaintPage implements OnInit {
 
   onChangeShowCanvas(event: Event) {
     this.showingCanvas = !this.showingCanvas;
-    if(this.showingCanvas){
-      this.loadBoard();
-      // TODO: No se vulve a ocultar el tablero despues de ocultarlo con ng if, utilizar display: hidden de css? 
-      // o ponerlo simplemente transparente
-     
-    }
+
+    // TODO: No se vulve a ocultar el tablero despues de ocultarlo con ng if, utilizar display: hidden de css? 
+    // o ponerlo simplemente transparente
   }
 
 

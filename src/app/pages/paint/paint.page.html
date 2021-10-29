@@ -23,13 +23,14 @@
 <ion-content>
 
   <canvas #myCanvas></canvas>
+  
 
-  <div  *ngIf="!showingCanvas" class="board" id="boardPaint">
+  <div [ngClass]="{'board-hidden': showingCanvas}" class="board div-board" id="boardPaint">
   </div>
 
   <ion-item>
     <ion-label>Mostrar lienzo</ion-label>
-    <ion-toggle (ionChange)="onChangeShowCanvas($event)" color="primary"></ion-toggle>
+    <ion-toggle [disabled]="disableShowCanvas"  (ionChange)="onChangeShowCanvas($event)" color="primary"></ion-toggle>
   </ion-item>
 
 
