@@ -37,6 +37,8 @@ export class PaintPage implements OnInit {
   disableShowCanvas = true;
   showingCanvas = false;
 
+  contextCanvas: any;
+
 
   board;
   chessInstance = new Chess();
@@ -154,7 +156,7 @@ export class PaintPage implements OnInit {
   buildCanvas() {
 
     this.canvasElement = this.canvas.nativeElement;
-    const context = this.canvasElement.getContext('2d');
+    this.contextCanvas = this.canvasElement.getContext('2d');
 
     this.canvasElement.width = this.board.view.width;
     this.canvasElement.height = this.board.view.height;
@@ -163,8 +165,8 @@ export class PaintPage implements OnInit {
     console.log(0, this.board.view.height);
 
 
-    context.fillStyle = 'red';
-    context.fillRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+    // this.contextCanvas.fillStyle = 'red';
+    // this.contextCanvas.fillRect(0, 0, this.canvasElement.width, this.canvasElement.height);
     this.canvasReadyBuild = true;
     this.matrizBoard();
     this.disableShowCanvas = false;
@@ -175,7 +177,9 @@ export class PaintPage implements OnInit {
     const sizeBoxX = this.board.view.width / 8;
     const sizeBoxY = this.board.view.height / 8;
 
-    console.log(sizeBoxX, sizeBoxY);
+    const halfSizeBoxX = sizeBoxX / 2;
+    const halfSizeBoxY = sizeBoxY / 2;
+
 
 
     this.matrizBoardBox = [];
@@ -184,25 +188,55 @@ export class PaintPage implements OnInit {
     // se crean desde la fila a [a8, b8, c8...]
 
 
-
+    let temX = 0;
+    let temY = 0;
     // esto corresponde a cada casilla, x, y = el punto medio de la casilla para dibujar
     for (let numb = 8; numb >= 1; numb--) {
 
+      let y;
+      if (temY === 0) {
+        y = halfSizeBoxY;
+        temY = y;
+      } else {
+        y = temY + sizeBoxY;
+        temY = y;
+      }
+
       for (let letter = 1; letter <= 8; letter++) {
-        console.log('letra ', letters[letter]);
-        // const element: MatrizBoardBox  = {
-        //   matrizLetter : letter,
-        //   matrizNumber : numb,
-        //   name: `${letters[letter]}${numb}`,
-        //   letter: letters[letter],
-        //   numb,
-        //   x,
-        //   y
-        // };
-        console.log('numero ', numb);
+
+        let x;
+        if (temX === 0) {
+          x = halfSizeBoxX;
+          temX = x
+        } else {
+          x = temX + sizeBoxX;
+          temX = x;
+        }
+
+        // console.log(x, y);
+
+
+        this.contextCanvas.fillStyle = 'red';
+        this.contextCanvas.fillRect(x,y, 1, 1);
+
+
+        // console.log('letra ', letters[letter]);
+        const element: MatrizBoardBox  = {
+          matrizLetter : letter,
+          matrizNumber : numb,
+          name: `${letters[letter]}${numb}`,
+          letter: letters[letter],
+          numb,
+          x,
+          y
+        };
+
+        this.matrizBoardBox.push(element);
+        // console.log('numero ', numb);
 
       }
 
+      temX = 0;
     }
 
   }
@@ -210,9 +244,6 @@ export class PaintPage implements OnInit {
 
   onChangeShowCanvas(event: Event) {
     this.showingCanvas = !this.showingCanvas;
-
-    // TODO: No se vulve a ocultar el tablero despues de ocultarlo con ng if, utilizar display: hidden de css? 
-    // o ponerlo simplemente transparente
   }
 
 
