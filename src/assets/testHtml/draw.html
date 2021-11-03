@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="myCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        let c = canvas.getContext("2d");
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        var mouseX, mouseY, pMouseX, pMouseY;
+        let baseR, baseG, baseB;
+        let color;
+        setup();
+
+
+
+        function setup() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+
+            baseR = Math.floor(Math.random() * 255);
+            baseG = Math.floor(Math.random() * 255);
+            baseB = Math.floor(Math.random() * 255);
+
+            color = `rgba(${baseR}, ${baseG}, ${baseB})`;
+
+            background("rgba(255, 255, 255, 0.00025)");
+            draw();
+        };
+
+        function draw() {
+            c.lineCap = "round";
+            c.lineJoin = "round";
+            background("rgba(255, 255, 255, .00001");
+            c.strokeStyle = color;
+
+            c.beginPath();
+
+            c.lineWidth = 30;
+            c.globalCompositeOperation = 'source-over';
+            c.filter = `blur(30px) opacity(5%)`;
+            c.stroke();
+            c.lineWidth = 28;
+            c.globalCompositeOperation = 'darken';
+            c.filter = `blur(30px) opacity(10%)`;
+            c.moveTo(pMouseX, pMouseY);
+
+            const xOffset = (Math.random() - .5) * 30,
+                yOffset = (Math.random() - .5) * 30;
+            c.lineTo(mouseX + xOffset, mouseY + yOffset);
+            c.stroke();
+
+            c.closePath();
+
+            setTimeout(draw, 10);
+        };
+
+        function background(color) {
+            c.beginPath();
+            c.rect(0, 0, width, height);
+            c.fillStyle = color;
+            c.fill();
+            c.closePath();
+        }
+
+        document.onmousemove = function (e) {
+            pMouseX = mouseX;
+            pMouseY = mouseY;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        };
+
+        window.onresize = function (event) {
+            setup();
+        };
+
+        document.onkeydown = function () {
+            console.log('hi');
+            color = `rgba(${Math.floor(Math.random() * baseR)}, ${Math.floor(Math.random() * baseG)}, ${Math.floor(Math.random() * baseB)})`;
+            console.log(color);
+
+        }
+    </script>
+</body>
+
+</html>

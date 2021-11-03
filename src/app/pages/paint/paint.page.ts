@@ -255,7 +255,7 @@ export class PaintPage implements OnInit {
       temX = 0;
     }
     // console.log(this.matrizBoardBox);
-    console.log(this.pieces);
+    // console.log(this.pieces);
     this.initialPositionOnMatriz();
 
   }
@@ -286,8 +286,6 @@ export class PaintPage implements OnInit {
     const elementToIndex = this.matrizBoardBox.findIndex(mbb => mbb.name === sTo);
     const elementFrom = this.matrizBoardBox[elementFromIndex];
     const elementTo = this.matrizBoardBox[elementToIndex];
-    console.log('elementTo ', elementTo);
-    console.log('elementFrom ', elementFrom);
 
     if (elementFrom && elementTo) {
 
@@ -318,11 +316,45 @@ export class PaintPage implements OnInit {
   }
 
 
-  drawRoute(elementFrom: MatrizBoardBox, elementTo: MatrizBoardBox){
-  
+  drawRoute(elementFrom: MatrizBoardBox, elementTo: MatrizBoardBox) {
+    this.contextCanvas.lineCap = "round";
+    this.contextCanvas.lineJoin = "round";
+    this.background("rgba(255, 255, 255, .00001");
+    this.contextCanvas.strokeStyle = elementFrom.piece?.color;
+
+    console.log('drawing');
+
+    this.contextCanvas.beginPath();
+
+    this.contextCanvas.lineWidth = 30;
+    this.contextCanvas.globalCompositeOperation = 'source-over';
+    this.contextCanvas.filter = `blur(30px) opacity(5%)`;
+    this.contextCanvas.stroke();
+    this.contextCanvas.lineWidth = 28;
+    this.contextCanvas.globalCompositeOperation = 'darken';
+    this.contextCanvas.filter = `blur(30px) opacity(10%)`;
+
+    // this.contextCanvas.moveTo(pMouseX, pMouseY);
+    this.contextCanvas.moveTo(elementFrom.x, elementFrom.y);
+
+    const xOffset = (Math.random() - .5) * 30,
+      yOffset = (Math.random() - .5) * 30;
+    this.contextCanvas.lineTo(elementTo.x + xOffset, elementTo.y + yOffset);
+    this.contextCanvas.stroke();
+
+    this.contextCanvas.closePath();
+
   }
 
-}  
+  background(color) {
+    this.contextCanvas.beginPath();
+    this.contextCanvas.rect(0, 0, this.board.view.width, this.board.view.height);
+    this.contextCanvas.fillStyle = color;
+    this.contextCanvas.fill();
+    this.contextCanvas.closePath();
+  }
+
+}
 
 
 
