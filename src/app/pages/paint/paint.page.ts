@@ -11,6 +11,13 @@ import {
 
 import { AuthService } from '@services/auth.service';
 
+interface Piece {
+  piece: string;
+  color: string;
+  positionStart: string;
+  positionEnd: string;
+};
+
 
 interface MatrizBoardBox {
   name: string;
@@ -18,7 +25,7 @@ interface MatrizBoardBox {
   y: number;
   matrizLetter: number;
   matrizNumber: number;
-  piece?: string;
+  piece?: Piece;
   letter: string;
   numb: number;
 };
@@ -48,7 +55,7 @@ export class PaintPage implements OnInit {
   isEnableDarkMode: boolean;
 
 
-  pieces = [
+  pieces: Piece[] = [
     { piece: 'W_TR', color: '#36abe0', positionStart: '', positionEnd: '' },
     { piece: 'W_CR', color: '#36abe0', positionStart: '', positionEnd: '' },
     { piece: 'W_AR', color: '#36abe0', positionStart: '', positionEnd: '' },
@@ -57,13 +64,15 @@ export class PaintPage implements OnInit {
     { piece: 'W_AD', color: '#36abe0', positionStart: '', positionEnd: '' },
     { piece: 'W_CD', color: '#36abe0', positionStart: '', positionEnd: '' },
     { piece: 'W_TD', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_PA', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_PB', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_PC', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_PD', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_PE', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_PF', color: '#36abe0', positionStart: '', positionEnd: '' },
+
     { piece: 'W_PH', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PG', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PF', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PE', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PD', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PC', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PB', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PA', color: '#36abe0', positionStart: '', positionEnd: '' },
 
     { piece: 'B_TR', color: '#36abe0', positionStart: '', positionEnd: '' },
     { piece: 'B_CR', color: '#36abe0', positionStart: '', positionEnd: '' },
@@ -73,13 +82,17 @@ export class PaintPage implements OnInit {
     { piece: 'B_AD', color: '#36abe0', positionStart: '', positionEnd: '' },
     { piece: 'B_CD', color: '#36abe0', positionStart: '', positionEnd: '' },
     { piece: 'B_TD', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_PA', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_PB', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_PC', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_PD', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_PE', color: '#36abe0', positionStart: '', positionEnd: '' },
+
+    { piece: 'B_PH', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_PG', color: '#36abe0', positionStart: '', positionEnd: '' },
     { piece: 'B_PF', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_PH', color: '#36abe0', positionStart: '', positionEnd: '' }
+    { piece: 'B_PE', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_PD', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_PC', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_PB', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_PA', color: '#36abe0', positionStart: '', positionEnd: '' },
+
+
   ];
 
   matrizBoardBox: MatrizBoardBox[] = [];
@@ -116,8 +129,13 @@ export class PaintPage implements OnInit {
     });
 
 
-
+    if (!this.canvasReadyBuild) {
+      this.buildCanvas();
+    }
     this.board.enableMoveInput((event) => {
+
+      console.log('board event ', event);
+
       // handle user input here
       switch (event.type) {
         case INPUT_EVENT_TYPE.moveStart:
@@ -135,11 +153,9 @@ export class PaintPage implements OnInit {
             } else {
               this.turn = 'black';
             }
-
+            this.executeMove(event.squareFrom, event.squareTo);
             this.board.setPosition(this.chessInstance.fen()).then(() => {
-              if (!this.canvasReadyBuild) {
-                this.buildCanvas();
-              }
+
               // se dibuja la linea
             });
             this.changeDetectorRef.markForCheck();
@@ -161,8 +177,8 @@ export class PaintPage implements OnInit {
     this.canvasElement.width = this.board.view.width;
     this.canvasElement.height = this.board.view.height;
 
-    console.log(0, this.board.view.width);
-    console.log(0, this.board.view.height);
+    // console.log(0, this.board.view.width);
+    // console.log(0, this.board.view.height);
 
 
     // this.contextCanvas.fillStyle = 'red';
@@ -217,13 +233,13 @@ export class PaintPage implements OnInit {
 
 
         this.contextCanvas.fillStyle = 'red';
-        this.contextCanvas.fillRect(x,y, 1, 1);
+        this.contextCanvas.fillRect(x, y, 1, 1);
 
 
         // console.log('letra ', letters[letter]);
-        const element: MatrizBoardBox  = {
-          matrizLetter : letter,
-          matrizNumber : numb,
+        const element: MatrizBoardBox = {
+          matrizLetter: letter,
+          matrizNumber: numb,
           name: `${letters[letter]}${numb}`,
           letter: letters[letter],
           numb,
@@ -238,6 +254,61 @@ export class PaintPage implements OnInit {
 
       temX = 0;
     }
+    // console.log(this.matrizBoardBox);
+    console.log(this.pieces);
+    this.initialPositionOnMatriz();
+
+  }
+
+  initialPositionOnMatriz() {
+
+    let j = 31;
+    for (let i = 0; i < 16; i++) {
+      this.matrizBoardBox[i].piece = this.pieces[j];
+      j--;
+    }
+
+    let jj = 0;
+
+    for (let i = 63; i > 47; i--) {
+      this.matrizBoardBox[i].piece = this.pieces[jj];
+      jj++;
+    }
+
+    console.log(this.matrizBoardBox);
+
+  }
+
+
+  executeMove(sFrom: string, sTo: string) {
+
+    const elementFromIndex = this.matrizBoardBox.findIndex(mbb => mbb.name === sFrom);
+    const elementToIndex = this.matrizBoardBox.findIndex(mbb => mbb.name === sTo);
+    const elementFrom = this.matrizBoardBox[elementFromIndex];
+    const elementTo = this.matrizBoardBox[elementToIndex];
+    console.log('elementTo ', elementTo);
+    console.log('elementFrom ', elementFrom);
+
+    if (elementFrom && elementTo) {
+
+      if (!elementTo.piece) {
+        // No es una captura
+        this.matrizBoardBox[elementToIndex].piece = this.matrizBoardBox[elementFromIndex].piece;
+        this.matrizBoardBox[elementFromIndex].piece = null;
+      } else {
+        // TODO: es una captura
+      }
+
+      this.drawRoute(elementFrom, elementTo);
+
+    } else {
+      console.log('error al obtener casillas de movimiento');
+      // TODO: mostrar error
+
+    }
+
+    console.log('this.matrizBoardBox ', this.matrizBoardBox);
+
 
   }
 
@@ -247,7 +318,11 @@ export class PaintPage implements OnInit {
   }
 
 
-}
+  drawRoute(elementFrom: MatrizBoardBox, elementTo: MatrizBoardBox){
+  
+  }
+
+}  
 
 
 
