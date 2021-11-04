@@ -56,41 +56,41 @@ export class PaintPage implements OnInit {
 
 
   pieces: Piece[] = [
-    { piece: 'W_TR', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_CR', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_AR', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_RR', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_DD', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_AD', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_CD', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_TD', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_TR', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'W_CR', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'W_AR', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'W_RR', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'W_DD', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'W_AD', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'W_CD', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'W_TD', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
 
-    { piece: 'W_PH', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_PG', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_PF', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_PE', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_PD', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_PC', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_PB', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'W_PA', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'W_PH', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'W_PG', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'W_PF', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'W_PE', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'W_PD', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'W_PC', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'W_PB', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'W_PA', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
 
-    { piece: 'B_TR', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_CR', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_AR', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_RR', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_DD', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_AD', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_CD', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_TD', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_TR', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'B_CR', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'B_AR', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'B_RR', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'B_DD', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'B_AD', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'B_CD', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'B_TD', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
 
-    { piece: 'B_PH', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_PG', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_PF', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_PE', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_PD', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_PC', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_PB', color: '#36abe0', positionStart: '', positionEnd: '' },
-    { piece: 'B_PA', color: '#36abe0', positionStart: '', positionEnd: '' },
+    { piece: 'B_PH', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'B_PG', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'B_PF', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'B_PE', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'B_PD', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'B_PC', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'B_PB', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
+    { piece: 'B_PA', color: this.getRandomColor(), positionStart: '', positionEnd: '' },
 
 
   ];
@@ -232,8 +232,8 @@ export class PaintPage implements OnInit {
         // console.log(x, y);
 
 
-        this.contextCanvas.fillStyle = 'red';
-        this.contextCanvas.fillRect(x, y, 1, 1);
+        // this.contextCanvas.fillStyle = 'red';
+        // this.contextCanvas.fillRect(x, y, 1, 1);
 
 
         // console.log('letra ', letters[letter]);
@@ -320,19 +320,24 @@ export class PaintPage implements OnInit {
     this.contextCanvas.lineCap = "round";
     this.contextCanvas.lineJoin = "round";
     this.background("rgba(255, 255, 255, .00001");
-    this.contextCanvas.strokeStyle = elementFrom.piece?.color;
+    this.contextCanvas.strokeStyle = elementTo.piece?.color;
 
+    console.log(elementFrom);
+    console.log(elementTo);
+    
+    
+
+    
+    this.contextCanvas.beginPath();
     console.log('drawing');
 
-    this.contextCanvas.beginPath();
-
-    this.contextCanvas.lineWidth = 30;
+    this.contextCanvas.lineWidth = 20;
     this.contextCanvas.globalCompositeOperation = 'source-over';
-    this.contextCanvas.filter = `blur(30px) opacity(5%)`;
+    this.contextCanvas.filter = `blur(15px) opacity(25%)`;
     this.contextCanvas.stroke();
-    this.contextCanvas.lineWidth = 28;
+    this.contextCanvas.lineWidth = 17;
     this.contextCanvas.globalCompositeOperation = 'darken';
-    this.contextCanvas.filter = `blur(30px) opacity(10%)`;
+    this.contextCanvas.filter = `blur(15px) opacity(50%)`;
 
     // this.contextCanvas.moveTo(pMouseX, pMouseY);
     this.contextCanvas.moveTo(elementFrom.x, elementFrom.y);
@@ -354,91 +359,14 @@ export class PaintPage implements OnInit {
     this.contextCanvas.closePath();
   }
 
+  getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
 }
 
-
-
-
-
-// const canvas = document.getElementById('myCanvas');
-// let c = canvas.getContext("2d");
-// width = window.innerWidth;
-// height = window.innerHeight;
-// canvas.width = width;
-// canvas.height = height;
-
-// var mouseX, mouseY, pMouseX, pMouseY;
-// let baseR, baseG, baseB;
-// let color;
-// setup();
-
-
-
-// function setup() {
-//     width = window.innerWidth;
-//     height = window.innerHeight;
-//     canvas.width = width;
-//     canvas.height = height;
-
-//     baseR = Math.floor(Math.random() * 255);
-//     baseG = Math.floor(Math.random() * 255);
-//     baseB = Math.floor(Math.random() * 255);
-
-//     color = `rgba(${baseR}, ${baseG}, ${baseB})`;
-
-//     background("rgba(255, 255, 255, 0.00025)");
-//     draw();
-// };
-
-// function draw() {
-//     c.lineCap = "round";
-//     c.lineJoin = "round";
-//     background("rgba(255, 255, 255, .00001");
-//     c.strokeStyle = color;
-
-//     c.beginPath();
-//     c.lineWidth = 30;
-//     c.globalCompositeOperation = 'source-over';
-//     c.filter = `blur(30px) opacity(5%)`;
-//     c.stroke();
-//     c.lineWidth = 28;
-//     c.globalCompositeOperation = 'darken';
-//     c.filter = `blur(30px) opacity(10%)`;
-//     c.moveTo(pMouseX, pMouseY);
-
-//     const xOffset = (Math.random() - .5) * 30,
-//     yOffset = (Math.random() - .5) * 30;
-//     c.lineTo(mouseX + xOffset, mouseY + yOffset);
-//     c.stroke();
-//     c.closePath();
-
-//     setTimeout(draw, 10);
-// };
-
-// function background(color) {
-//     c.beginPath();
-//     c.rect(0, 0, width, height);
-//     c.fillStyle = color;
-//     c.fill();
-//     c.closePath();
-// }
-
-// document.onmousemove = function (e) {
-//     pMouseX = mouseX;
-//     pMouseY = mouseY;
-//     mouseX = e.clientX;
-//     mouseY = e.clientY;
-// };
-
-// window.onresize = function (event) {
-//     setup();
-// };
-
-// document.onkeydown = function () {
-//     console.log('hi');
-//     color = `rgba(${Math.floor(Math.random() * baseR)},
-//     ${Math.floor(Math.random() * baseG)},
-//     ${Math.floor(Math.random() * baseB)})`;
-//     console.log(color);
-
-// }
