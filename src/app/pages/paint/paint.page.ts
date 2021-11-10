@@ -30,6 +30,11 @@ interface MatrizBoardBox {
   numb: number;
 };
 
+interface Brush {
+  distance: number,
+  thickness: number
+}
+
 @Component({
   selector: 'app-paint',
   templateUrl: './paint.page.html',
@@ -316,7 +321,70 @@ export class PaintPage implements OnInit {
   }
 
 
-  drawRoute(elementFrom: MatrizBoardBox, elementTo: MatrizBoardBox) {
+  async drawRoute(elementFrom: MatrizBoardBox, elementTo: MatrizBoardBox) {
+
+
+    const colour = elementTo?.piece?.color ? elementTo?.piece?.color:  "#3d34a5";
+    const strokeWidth = 25;
+
+    const bristleCount = Math.round(strokeWidth / 3);
+
+    const bristles = await this.makeBrush(strokeWidth);
+
+    bristles.forEach(bristle  => {
+
+      const bristleOriginX = elementFrom.x - strokeWidth / 2 + bristle.distance;
+      const bristleDestinationX = elementTo.x - strokeWidth / 2 + bristle.distance;
+
+      this.contextCanvas.beginPath();
+      this.contextCanvas.moveTo(bristleOriginX, elementFrom.y);
+      this.contextCanvas.strokeStyle = colour;
+      this.contextCanvas.lineWidth = 2;
+      this.contextCanvas.lineCap = "round";
+      this.contextCanvas.lineJoin = "round";
+      this.contextCanvas.lineTo(bristleDestinationX, elementTo.y);
+      this.contextCanvas.stroke();
+
+    });
+
+
+    const gap = strokeWidth / bristleCount;
+    for (let i = 0; i < bristleCount; i++) {
+
+      // Drawing state
+      this.contextCanvas.beginPath();
+      this.contextCanvas.moveTo(elementFrom.x + i * gap, elementFrom.y);
+      this.contextCanvas.strokeStyle = colour;
+      this.contextCanvas.lineWidth = 2;
+      this.contextCanvas.lineCap = "round";
+      this.contextCanvas.lineJoin = "round";
+      this.contextCanvas.lineTo(elementTo.x + i * gap, elementTo.y);
+      this.contextCanvas.stroke();
+
+    }
+
+  }
+
+
+  makeBrush(size: number) {
+    const brush: Brush[] = [];
+    const strokeWidth = size;
+    let bristleCount = Math.round(size / 3);
+    const gap = strokeWidth / bristleCount;
+    for (let i = 0; i < bristleCount; i++) {
+      const distance =
+        i === 0 ? 0 : gap * i + Math.random() * gap / 2 - gap / 2;
+      brush.push({
+        distance,
+        thickness: Math.random() * 2 + 2
+      });
+    }
+    return brush;
+  };
+
+
+  // obsolete -----------------
+  lineBluer(elementFrom: MatrizBoardBox, elementTo: MatrizBoardBox) {
     this.contextCanvas.lineCap = "round";
     this.contextCanvas.lineJoin = "round";
     this.background("rgba(255, 255, 255, .00001");
@@ -324,10 +392,8 @@ export class PaintPage implements OnInit {
 
     console.log(elementFrom);
     console.log(elementTo);
-    
-    
 
-    
+
     this.contextCanvas.beginPath();
     console.log('drawing');
 
@@ -348,9 +414,7 @@ export class PaintPage implements OnInit {
     this.contextCanvas.stroke();
 
     this.contextCanvas.closePath();
-
   }
-
   background(color) {
     this.contextCanvas.beginPath();
     this.contextCanvas.rect(0, 0, this.board.view.width, this.board.view.height);
@@ -358,6 +422,8 @@ export class PaintPage implements OnInit {
     this.contextCanvas.fill();
     this.contextCanvas.closePath();
   }
+  ///--------------------------
+
 
   getRandomColor() {
     const letters = '0123456789ABCDEF';
