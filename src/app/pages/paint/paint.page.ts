@@ -1,4 +1,5 @@
 import { Component, ViewChild, ElementRef, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import tinycolor from 'tinycolor2';
 
 import Chess from 'chess.js';
 
@@ -32,7 +33,8 @@ interface MatrizBoardBox {
 
 interface Brush {
   distance: number,
-  thickness: number
+  thickness: number,
+  color: string
 }
 
 @Component({
@@ -321,24 +323,24 @@ export class PaintPage implements OnInit {
   }
 
 
-  async drawRoute(elementFrom: MatrizBoardBox, elementTo: MatrizBoardBox) {
+  async drawRoute(elementFrom: MatrizBoardBox, elementTo: MatrizBoardBox, oldAngle, newAngle) {
 
 
-    const colour = elementTo?.piece?.color ? elementTo?.piece?.color:  "#3d34a5";
+    const colour = elementTo?.piece?.color ? elementTo?.piece?.color : "#3d34a5";
     const strokeWidth = 25;
 
     const bristleCount = Math.round(strokeWidth / 3);
 
-    const bristles = await this.makeBrush(strokeWidth);
-
-    bristles.forEach(bristle  => {
+    const bristles = await this.makeBrush(strokeWidth, colour);
+    let currentAngle = 0;
+    bristles.forEach(bristle => {
 
       const bristleOriginX = elementFrom.x - strokeWidth / 2 + bristle.distance;
       const bristleDestinationX = elementTo.x - strokeWidth / 2 + bristle.distance;
 
       this.contextCanvas.beginPath();
       this.contextCanvas.moveTo(bristleOriginX, elementFrom.y);
-      this.contextCanvas.strokeStyle = colour;
+      this.contextCanvas.strokeStyle = bristle.color;
       this.contextCanvas.lineWidth = 2;
       this.contextCanvas.lineCap = "round";
       this.contextCanvas.lineJoin = "round";
@@ -366,7 +368,7 @@ export class PaintPage implements OnInit {
   }
 
 
-  makeBrush(size: number) {
+  makeBrush(size: number, color) {
     const brush: Brush[] = [];
     const strokeWidth = size;
     let bristleCount = Math.round(size / 3);
@@ -376,10 +378,46 @@ export class PaintPage implements OnInit {
         i === 0 ? 0 : gap * i + Math.random() * gap / 2 - gap / 2;
       brush.push({
         distance,
-        thickness: Math.random() * 2 + 2
+        thickness: Math.random() * 2 + 2,
+        color
       });
     }
     return brush;
+  };
+
+  varyColour(sourceColour) {
+    const varyBrightness = 5;
+    const amount = Math.round(Math.random() * 2 * varyBrightness);
+    const c = tinycolor(sourceColour);
+    const varied =
+      amount > varyBrightness
+        ? c.brighten(amount - varyBrightness)
+        : c.darken(amount);
+    return varied.toHexString();
+  }
+
+  rotatePoint(distance, angle, origin) {
+    return [
+      origin[0] + distance * Math.cos(angle),
+      origin[1] + distance * Math.sin(angle)
+    ];
+  }
+
+  getBearing(origin, destination) {
+    return (Math.atan2(destination[1] - origin[1], destination[0] - origin[0]) - Math.PI / 2) % (Math.PI * 2);
+  }
+
+  angleDiff(angleA, angleB) {
+    const twoPi = Math.PI * 2;
+    const diff =
+      (angleA - (angleB > 0 ? angleB : angleB + twoPi) + Math.PI) % twoPi -
+      Math.PI;
+    return diff < -Math.PI ? diff + twoPi : diff;
+  };
+
+  getNewAngle(origin, destination, oldAngle) {
+    const bearing = this.getBearing(origin, destination);
+    return oldAngle - this.angleDiff(oldAngle, bearing);
   };
 
 
@@ -431,6 +469,8 @@ export class PaintPage implements OnInit {
     for (let i = 0; i < 6; i++) {
       color += letters[Math.floor(Math.random() * 16)];
     }
+    console.log('color ', color);
+
     return color;
   }
 
