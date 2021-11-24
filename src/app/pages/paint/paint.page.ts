@@ -52,7 +52,7 @@ export class PaintPage implements OnInit {
   showingCanvas = false;
 
 
-  currentAngle;
+  currentAngle = 0;
 
   contextCanvas: any;
 
@@ -127,6 +127,11 @@ export class PaintPage implements OnInit {
       })
 
     }
+  }
+
+  
+  onChangeShowCanvas(event: Event) {
+    this.showingCanvas = !this.showingCanvas;
   }
 
   async loadBoard() {
@@ -310,7 +315,7 @@ export class PaintPage implements OnInit {
       const latestPoint = [elementFrom.x, elementFrom.y];
       const newPoint = [elementTo.x, elementTo.y];
       const newAngle = this.getNewAngle(latestPoint, newPoint, this.currentAngle);
-      this.drawRoute(elementFrom, elementTo,this.currentAngle, newAngle);
+      this.drawRoute(elementFrom, elementTo, this.currentAngle, newAngle);
 
     } else {
       console.log('error al obtener casillas de movimiento');
@@ -324,10 +329,6 @@ export class PaintPage implements OnInit {
   }
 
 
-  onChangeShowCanvas(event: Event) {
-    this.showingCanvas = !this.showingCanvas;
-  }
-
 
   async drawRoute(elementFrom: MatrizBoardBox, elementTo: MatrizBoardBox, oldAngle, newAngle) {
 
@@ -335,21 +336,27 @@ export class PaintPage implements OnInit {
     const colour = elementTo?.piece?.color ? elementTo?.piece?.color : "#3d34a5";
     const strokeWidth = 25;
 
-    const bristleCount = Math.round(strokeWidth / 3);
-
     const bristles = await this.makeBrush(strokeWidth, colour);
     bristles.forEach(bristle => {
 
-      const bristleOriginX = elementFrom.x - strokeWidth / 2 + bristle.distance;
-      const start = bristle.distance - strokeWidth / 2;
-      // const bristleOriginX = this.rotatePoint(start, oldAngle, elementFrom.x );
-
+      // const bristleOriginX = elementFrom.x - strokeWidth / 2 + bristle.distance;
       const bristleDestinationX = elementTo.x - strokeWidth / 2 + bristle.distance;
+      const start = bristle.distance - strokeWidth / 2;
+
+      // TODO: Arreglar esto aqui es donde esta el error
+      //debo detenerme a parar la linea como si fuese un mause y generar puntos de inicio y de fin
+      // cuando en el tutorial inicia en :
+      // let currentAngle = 0;
+
+      const bristleOriginX = this.rotatePoint(start, oldAngle, elementFrom.x );
+      // const bristleDestinationX = this.rotatePoint(start, newAngle, elementTo.x );
+
 
       this.contextCanvas.beginPath();
       this.contextCanvas.moveTo(bristleOriginX, elementFrom.y);
       this.contextCanvas.strokeStyle = bristle.color;
       this.contextCanvas.lineWidth = 2;
+      this.contextCanvas.lineWidth = bristle.thickness;
       this.contextCanvas.lineCap = "round";
       this.contextCanvas.lineJoin = "round";
       this.contextCanvas.lineTo(bristleDestinationX, elementTo.y);
@@ -357,21 +364,6 @@ export class PaintPage implements OnInit {
 
     });
 
-
-    const gap = strokeWidth / bristleCount;
-    for (let i = 0; i < bristleCount; i++) {
-
-      // Drawing state
-      this.contextCanvas.beginPath();
-      this.contextCanvas.moveTo(elementFrom.x + i * gap, elementFrom.y);
-      this.contextCanvas.strokeStyle = colour;
-      this.contextCanvas.lineWidth = 2;
-      this.contextCanvas.lineCap = "round";
-      this.contextCanvas.lineJoin = "round";
-      this.contextCanvas.lineTo(elementTo.x + i * gap, elementTo.y);
-      this.contextCanvas.stroke();
-
-    }
 
   }
 
@@ -415,6 +407,12 @@ export class PaintPage implements OnInit {
     return (Math.atan2(destination[1] - origin[1], destination[0] - origin[0]) - Math.PI / 2) % (Math.PI * 2);
   }
 
+  getNewAngle(origin, destination, oldAngle) {
+    const bearing = this.getBearing(origin, destination);
+    return oldAngle - this.angleDiff(oldAngle, bearing);
+  };
+
+
   angleDiff(angleA, angleB) {
     const twoPi = Math.PI * 2;
     const diff =
@@ -423,10 +421,6 @@ export class PaintPage implements OnInit {
     return diff < -Math.PI ? diff + twoPi : diff;
   };
 
-  getNewAngle(origin, destination, oldAngle) {
-    const bearing = this.getBearing(origin, destination);
-    return oldAngle - this.angleDiff(oldAngle, bearing);
-  };
 
 
   // obsolete -----------------
