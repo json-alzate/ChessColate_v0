@@ -6,94 +6,170 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            border: 2px solid black;
+        }
+    </style>
 </head>
 
 <body>
-    <canvas id="myCanvas"></canvas>
+    <canvas id="canvas" height="600" width="800"></canvas>
 
     <script>
-        const canvas = document.getElementById('myCanvas');
-        let c = canvas.getContext("2d");
-        width = window.innerWidth;
-        height = window.innerHeight;
-        canvas.width = width;
-        canvas.height = height;
+        // Brush colour and size
+        const colour = "#3d34a5";
+        let strokeWidth = 25;
 
-        var mouseX, mouseY, pMouseX, pMouseY;
-        let baseR, baseG, baseB;
-        let color;
-        setup();
+        // Drawing state
+        let latestPoint;
+        let drawing = false;
 
+        // Set up our drawing context
+        const canvas = document.getElementById("canvas");
+        const context = canvas.getContext("2d");
 
+        // Drawing functions
 
-        function setup() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-
-            baseR = Math.floor(Math.random() * 255);
-            baseG = Math.floor(Math.random() * 255);
-            baseB = Math.floor(Math.random() * 255);
-
-            color = `rgba(${baseR}, ${baseG}, ${baseB})`;
-
-            background("rgba(255, 255, 255, 0.00025)");
-            draw();
+        const strokeBristle = (origin, destination, width) => {
+            context.beginPath();
+            context.moveTo(origin[0], origin[1]);
+            context.strokeStyle = colour;
+            context.lineWidth = width;
+            context.lineCap = "round";
+            context.lineJoin = "round";
+            context.lineTo(destination[0], destination[1]);
+            context.stroke();
         };
 
-        function draw() {
-            c.lineCap = "round";
-            c.lineJoin = "round";
-            background("rgba(255, 255, 255, .00001");
-            c.strokeStyle = color;
+        const drawStroke = (bristles, origin, destination) => {
+            bristles.forEach(bristle => {
+                context.beginPath();
+                const bristleOrigin = origin[0] - strokeWidth / 2 + bristle.distance;
 
-            c.beginPath();
-
-            c.lineWidth = 30;
-            c.globalCompositeOperation = 'source-over';
-            c.filter = `blur(30px) opacity(5%)`;
-            c.stroke();
-            c.lineWidth = 28;
-            c.globalCompositeOperation = 'darken';
-            c.filter = `blur(30px) opacity(10%)`;
-            c.moveTo(pMouseX, pMouseY);
-
-            const xOffset = (Math.random() - .5) * 30,
-                yOffset = (Math.random() - .5) * 30;
-            c.lineTo(mouseX + xOffset, mouseY + yOffset);
-            c.stroke();
-
-            c.closePath();
-
-            setTimeout(draw, 10);
+                const bristleDestination =
+                    destination[0] - strokeWidth / 2 + bristle.distance;
+                strokeBristle(
+                    [bristleOrigin, origin[1]],
+                    [bristleDestination, destination[1]],
+                    bristle.thickness
+                );
+            });
         };
 
-        function background(color) {
-            c.beginPath();
-            c.rect(0, 0, width, height);
-            c.fillStyle = color;
-            c.fill();
-            c.closePath();
-        }
 
-        document.onmousemove = function (e) {
-            pMouseX = mouseX;
-            pMouseY = mouseY;
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+        const makeBrush = size => {
+            const brush = [];
+            strokeWidth = size;
+            let bristleCount = Math.round(size / 3);
+            const gap = strokeWidth / bristleCount;
+            for (let i = 0; i < bristleCount; i++) {
+                const distance =
+                    i === 0 ? 0 : gap * i + Math.random() * gap / 2 - gap / 2;
+                brush.push({
+                    distance,
+                    thickness: Math.random() * 2 + 2
+                });
+            }
+            return brush;
         };
 
-        window.onresize = function (event) {
-            setup();
+        let currentBrush = makeBrush();
+
+        const continueStroke = newPoint => {
+            drawStroke(currentBrush, latestPoint, newPoint);
+            latestPoint = newPoint;
         };
 
-        document.onkeydown = function () {
-            console.log('hi');
-            color = `rgba(${Math.floor(Math.random() * baseR)}, ${Math.floor(Math.random() * baseG)}, ${Math.floor(Math.random() * baseB)})`;
-            console.log(color);
 
-        }
+
+        // Event helpers
+
+        const startStroke = point => {
+            currentBrush = makeBrush(strokeWidth);
+            drawing = true;
+            latestPoint = point;
+        };
+
+        const BUTTON = 0b01;
+        const mouseButtonIsDown = buttons => (BUTTON & buttons) === BUTTON;
+
+        // Event handlers
+
+        const mouseMove = evt => {
+            if (!drawing) {
+                return;
+            }
+            continueStroke([evt.offsetX, evt.offsetY]);
+        };
+
+        const mouseDown = evt => {
+            if (drawing) {
+                return;
+            }
+            evt.preventDefault();
+            canvas.addEventListener("mousemove", mouseMove, false);
+            startStroke([evt.offsetX, evt.offsetY]);
+        };
+
+        const mouseEnter = evt => {
+            if (!mouseButtonIsDown(evt.buttons) || drawing) {
+                return;
+            }
+            mouseDown(evt);
+        };
+
+        const endStroke = evt => {
+            if (!drawing) {
+                return;
+            }
+            drawing = false;
+            evt.currentTarget.removeEventListener("mousemove", mouseMove, false);
+        };
+
+        // Register event handlers
+
+        canvas.addEventListener("mousedown", mouseDown, false);
+        canvas.addEventListener("mouseup", endStroke, false);
+        canvas.addEventListener("mouseout", endStroke, false);
+        canvas.addEventListener("mouseenter", mouseEnter, false);
+
+        const getTouchPoint = evt => {
+            if (!evt.currentTarget) {
+                return [0, 0];
+            }
+            const rect = evt.currentTarget.getBoundingClientRect();
+            const touch = evt.targetTouches[0];
+            return [touch.clientX - rect.left, touch.clientY - rect.top];
+        };
+
+        const touchStart = evt => {
+            if (drawing) {
+                return;
+            }
+            evt.preventDefault();
+            startStroke(getTouchPoint(evt));
+        };
+
+        const touchMove = evt => {
+            if (!drawing) {
+                return;
+            }
+            continueStroke(getTouchPoint(evt));
+        };
+
+        const touchEnd = evt => {
+            drawing = false;
+        };
+
+        canvas.addEventListener("touchstart", touchStart, false);
+        canvas.addEventListener("touchend", touchEnd, false);
+        canvas.addEventListener("touchcancel", touchEnd, false);
+        canvas.addEventListener("touchmove", touchMove, false);
     </script>
 </body>
 

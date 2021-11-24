@@ -51,6 +51,9 @@ export class PaintPage implements OnInit {
   disableShowCanvas = true;
   showingCanvas = false;
 
+
+  currentAngle;
+
   contextCanvas: any;
 
 
@@ -304,7 +307,10 @@ export class PaintPage implements OnInit {
         // TODO: es una captura
       }
 
-      this.drawRoute(elementFrom, elementTo);
+      const latestPoint = [elementFrom.x, elementFrom.y];
+      const newPoint = [elementTo.x, elementTo.y];
+      const newAngle = this.getNewAngle(latestPoint, newPoint, this.currentAngle);
+      this.drawRoute(elementFrom, elementTo,this.currentAngle, newAngle);
 
     } else {
       console.log('error al obtener casillas de movimiento');
@@ -332,10 +338,12 @@ export class PaintPage implements OnInit {
     const bristleCount = Math.round(strokeWidth / 3);
 
     const bristles = await this.makeBrush(strokeWidth, colour);
-    let currentAngle = 0;
     bristles.forEach(bristle => {
 
       const bristleOriginX = elementFrom.x - strokeWidth / 2 + bristle.distance;
+      const start = bristle.distance - strokeWidth / 2;
+      // const bristleOriginX = this.rotatePoint(start, oldAngle, elementFrom.x );
+
       const bristleDestinationX = elementTo.x - strokeWidth / 2 + bristle.distance;
 
       this.contextCanvas.beginPath();
